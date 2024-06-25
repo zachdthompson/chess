@@ -2,6 +2,7 @@ package chess.moves;
 
 import chess.ChessBoard;
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 
 import java.util.ArrayList;
@@ -12,12 +13,31 @@ import java.util.function.BiFunction;
 
 public class KnightMoves {
 
-    private final int[][] possibleMoves = {{2,-1}, {2,1}, {-2, -1}, {-2, 1}};
+    private final int[][] possibleKnightMoves = {{2, -1}, {2, 1}, {-2, -1}, {-2, 1}};
+    private final int[][] possibleKingMoves = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 
-    public Collection<ChessMove> getValidMoves(ChessBoard board, ChessPosition myPosition) {
+
+    public Collection<ChessMove> getValidMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
         ArrayList<ChessMove> validMoves = new ArrayList<ChessMove>();
 
-        for (int[] move : possibleMoves) {
+        ChessPiece.PieceType type = piece.getPieceType();
+
+        if (type == ChessPiece.PieceType.KNIGHT) {
+
+            validMoves.addAll(findAllMoves(myPosition, possibleKnightMoves));
+
+        }
+        else if (type == ChessPiece.PieceType.KING) {
+
+            validMoves.addAll(findAllMoves(myPosition, possibleKingMoves));
+        }
+
+        return validMoves;
+    }
+
+    private ArrayList<ChessMove> findAllMoves(ChessPosition myPosition, int[][] possiblePieceMoves) {
+        ArrayList<ChessMove> validMoves = new ArrayList<ChessMove>();
+        for (int[] move : possiblePieceMoves) {
             int row = move[0];
             int col = move[1];
 
@@ -34,7 +54,6 @@ public class KnightMoves {
             ChessMove newMove = new ChessMove(myPosition, newPosition, null);
             validMoves.add(newMove);
         }
-
         return validMoves;
     }
 

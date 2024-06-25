@@ -7,11 +7,9 @@ import chess.ChessPosition;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.BiFunction;
 
-public class KnightMoves {
+
+public class OneSpaceMoves {
 
     private final int[][] possibleKnightMoves = {{2, -1}, {2, 1}, {-2, -1}, {-2, 1}};
     private final int[][] possibleKingMoves = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};

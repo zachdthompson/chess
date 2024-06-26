@@ -50,7 +50,6 @@ public class ChessBoard {
 
 
     public ChessBoard() {
-        resetBoard();
     }
 
     public ChessBoard(ChessBoard importBoard) {
@@ -75,7 +74,7 @@ public class ChessBoard {
 
         // Place it on the board
 
-        square[row][col] = piece;
+        this.square[row][col] = piece;
     }
 
     public void removePiece(ChessPosition position, ChessPiece piece) {
@@ -83,7 +82,7 @@ public class ChessBoard {
         // Extract positions and subtract 1 due to indexing by zero
         int col = position.getColumn() - 1;
         int row = position.getRow() - 1;
-        square[row][col] = null;
+        this.square[row][col] = null;
     }
 
     /**
@@ -180,7 +179,7 @@ public class ChessBoard {
      * @param teamColor The color of the team of the piece
      */
     private void addPieceOnSquare(int[] position, PieceType pieceType, ChessGame.TeamColor teamColor) {
-        square[position[0]][position[1]] = new ChessPiece(teamColor, pieceType);
+        this.square[position[0]][position[1]] = new ChessPiece(teamColor, pieceType);
     }
 
     @Override

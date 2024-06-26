@@ -3,6 +3,8 @@ package chess;
 import chess.ChessPiece.PieceType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -22,16 +24,12 @@ public class ChessBoard {
     private final int[][] blackQueenPosition = {{7,3}};
     private final int[][] blackKingPosition = {{7,4}};
 
-    private final ArrayList<int[][]> blackPositions = new ArrayList<>();
-
     private final int[][] whitePawnPositions = {{1,0}, {1,1}, {1,2}, {1,3}, {1,4}, {1,5}, {1,6}, {1,7}};
     private final int[][] whiteRookPositions = {{0,0}, {0,7}};
     private final int[][] whiteBishopPositions = {{0,2}, {0,5}};
     private final int[][] whiteKnightPositions = {{0,1}, {0,6}};
     private final int[][] whiteQueenPositions = {{0,3}};
     private final int[][] whiteKingPositions = {{0,4}};
-
-    private final ArrayList<int[][]> whitePositions = new ArrayList<>();
 
 
     /*
@@ -56,7 +54,7 @@ public class ChessBoard {
     }
 
     public ChessBoard(ChessBoard importBoard) {
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < importBoard.square.length; i++) {
             // Idk what this does, IntelliJ recommended I use this instead of a double for loop...
             System.arraycopy(importBoard.square[i], 0, this.square[i], 0, 8);
         }
@@ -77,7 +75,15 @@ public class ChessBoard {
 
         // Place it on the board
 
-        this.square[row][col] = piece;
+        square[row][col] = piece;
+    }
+
+    public void removePiece(ChessPosition position, ChessPiece piece) {
+
+        // Extract positions and subtract 1 due to indexing by zero
+        int col = position.getColumn() - 1;
+        int row = position.getRow() - 1;
+        square[row][col] = null;
     }
 
     /**
@@ -88,6 +94,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
+
         // Extract positions and subtract 1 due to indexing by 0
         int col = position.getColumn() - 1;
         int row = position.getRow() - 1;
@@ -165,7 +172,34 @@ public class ChessBoard {
 
     }
 
+    /**
+     * Adds a piece on to a given square
+     * Using a seperate function as my setup gives coords indexed by 0
+     * @param position The position of the square to place the piece
+     * @param pieceType The type of piece we are placing
+     * @param teamColor The color of the team of the piece
+     */
     private void addPieceOnSquare(int[] position, PieceType pieceType, ChessGame.TeamColor teamColor) {
         square[position[0]][position[1]] = new ChessPiece(teamColor, pieceType);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(square, that.square);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(square);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessBoard{" +
+                "square=" + Arrays.toString(square) +
+                '}';
     }
 }

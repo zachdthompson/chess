@@ -15,10 +15,15 @@ public class OneSpaceMoves {
     private final int[][] possibleKingMoves = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 
 
-    public Collection<ChessMove> getValidMoves(ChessBoard board, ChessPosition myPosition, ChessPiece piece) {
+    /**
+     *
+     * @param board The board of the game being played.
+     * @param myPosition The current position of the piece to calculate moves for
+     * @param type The piece type, to dictate what moves to calculate
+     * @return An array of all possible moves for the given piece
+     */
+    public Collection<ChessMove> getValidMoves(ChessBoard board, ChessPosition myPosition, ChessPiece.PieceType type) {
         ArrayList<ChessMove> validMoves = new ArrayList<ChessMove>();
-
-        ChessPiece.PieceType type = piece.getPieceType();
 
         if (type == ChessPiece.PieceType.KNIGHT) {
 
@@ -33,6 +38,12 @@ public class OneSpaceMoves {
         return validMoves;
     }
 
+    /**
+     *
+     * @param myPosition The position on the board to begin calculating from
+     * @param possiblePieceMoves The 2D array of possible moves for that piece
+     * @return An array of valid moves for the given piece
+     */
     private ArrayList<ChessMove> findAllMoves(ChessPosition myPosition, int[][] possiblePieceMoves) {
         ArrayList<ChessMove> validMoves = new ArrayList<ChessMove>();
         for (int[] move : possiblePieceMoves) {

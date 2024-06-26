@@ -77,7 +77,7 @@ public class ChessBoard {
         this.square[row][col] = piece;
     }
 
-    public void removePiece(ChessPosition position, ChessPiece piece) {
+    public void removePiece(ChessPosition position) {
 
         // Extract positions and subtract 1 due to indexing by zero
         int col = position.getColumn() - 1;

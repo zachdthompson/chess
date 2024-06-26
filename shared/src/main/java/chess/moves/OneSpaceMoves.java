@@ -63,10 +63,13 @@ public class OneSpaceMoves {
             // If its valid, make a new position and add it.
             ChessPosition newPosition = new ChessPosition(newRow + 1, newCol + 1);
 
-            // Check for collision with another piece
+            // Check for collision with another friendly piece
             if (board.getPiece(newPosition) != null) {
-                continue;
+                if (board.getPiece(newPosition).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
+                    continue;
+                }
             }
+
 
             ChessMove newMove = new ChessMove(myPosition, newPosition, null);
             validMoves.add(newMove);

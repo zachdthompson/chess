@@ -62,25 +62,23 @@ public class RecursiveMoves {
 
         ArrayList<ChessMove> allMoves = new ArrayList<ChessMove>();
 
+        // For the first loop, set the new position to the current one
         if (newPosition == null) {
             newPosition = myPosition;
         }
-        // Get current location
-        int currRow = newPosition.getRow() - 1;
-        int currCol = newPosition.getColumn() - 1;
 
         // Get new location
-        int newRow = currRow + currentMove[0];
-        int newColumn = currCol + currentMove[1];
+        int newRow = newPosition.getRow()+ currentMove[0];
+        int newColumn = newPosition.getColumn() + currentMove[1];
 
 
         // Check for out of bounds
-        if (newRow > 7 || newColumn > 7 || newRow < 0 || newColumn < 0) {
+        if (newRow > 8 || newColumn > 8 || newRow < 1 || newColumn < 1) {
             return allMoves;
         }
         else {
             // Create the new position and
-            newPosition = new ChessPosition(newRow + 1, newColumn + 1);
+            newPosition = new ChessPosition(newRow, newColumn);
             ChessMove validMove = new ChessMove(myPosition, newPosition, null);
 
             // Check for collision with another friendly piece
@@ -94,15 +92,12 @@ public class RecursiveMoves {
                     allMoves.add(validMove);
                     return allMoves;
                 }
-
             }
-
+            // add the valid move
+            allMoves.add(validMove);
             // Loop again
             allMoves.addAll(recursiveFindAllMoves(board, myPosition, newPosition, currentMove));
-            allMoves.add(validMove);
         }
-
-
         return allMoves;
     }
 }

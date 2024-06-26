@@ -66,13 +66,10 @@ public class ChessPiece {
 
         // Send the different moves where they need to go
         switch (pieceType) {
-            case KING:
-            case KNIGHT:
+            case KING, KNIGHT:
                 moves.addAll(oneSpaceMoves.getValidMoves(board, myPosition, pieceType));
                 break;
-            case QUEEN:
-            case BISHOP:
-            case ROOK:
+            case QUEEN, BISHOP, ROOK:
                 moves.addAll(recursiveMoves.getValidMoves(board, myPosition, pieceType));
                 break;
             case PAWN:

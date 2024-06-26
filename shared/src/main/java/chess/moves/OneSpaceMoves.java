@@ -12,7 +12,7 @@ import java.util.Collection;
 public class OneSpaceMoves {
 
     private final int[][] possibleKnightMoves = {{2, -1}, {2, 1}, {-2, -1}, {-2, 1}};
-    private final int[][] possibleKingMoves = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+    private final int[][] possibleKingMoves = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}, {1, -1}, {1, 1}, {-1, -1}, {-1, 1}};
 
 
     /**
@@ -23,16 +23,16 @@ public class OneSpaceMoves {
      * @return An array of all possible moves for the given piece
      */
     public Collection<ChessMove> getValidMoves(ChessBoard board, ChessPosition myPosition, ChessPiece.PieceType type) {
-        ArrayList<ChessMove> validMoves = new ArrayList<ChessMove>();
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
 
         if (type == ChessPiece.PieceType.KNIGHT) {
 
-            validMoves.addAll(findAllMoves(myPosition, possibleKnightMoves));
+            validMoves.addAll(findAllMoves(board, myPosition, possibleKnightMoves));
 
         }
         else if (type == ChessPiece.PieceType.KING) {
 
-            validMoves.addAll(findAllMoves(myPosition, possibleKingMoves));
+            validMoves.addAll(findAllMoves(board, myPosition, possibleKingMoves));
         }
 
         return validMoves;
@@ -44,22 +44,30 @@ public class OneSpaceMoves {
      * @param possiblePieceMoves The 2D array of possible moves for that piece
      * @return An array of valid moves for the given piece
      */
-    private ArrayList<ChessMove> findAllMoves(ChessPosition myPosition, int[][] possiblePieceMoves) {
-        ArrayList<ChessMove> validMoves = new ArrayList<ChessMove>();
+    private ArrayList<ChessMove> findAllMoves(ChessBoard board, ChessPosition myPosition, int[][] possiblePieceMoves) {
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
         for (int[] move : possiblePieceMoves) {
             int row = move[0];
             int col = move[1];
 
-            int newRow = myPosition.getRow() + row;
-            int newCol = myPosition.getColumn() + col;
+            int newRow = (myPosition.getRow() - 1) + row;
+            int newCol = (myPosition.getColumn() - 1) + col;
 
             // If the move is out of bounds of the board, dont add it
-            if (newRow > 8 || newRow < 0 || newCol > 8 || newCol < 0) {
+            if (newRow > 7 || newRow < 0 || newCol > 7 || newCol < 0) {
                 continue;
             }
 
+
+
             // If its valid, make a new position and add it.
-            ChessPosition newPosition = new ChessPosition(row, col);
+            ChessPosition newPosition = new ChessPosition(newRow + 1, newCol + 1);
+
+            // Check for collision with another piece
+            if (board.getPiece(newPosition) != null) {
+                continue;
+            }
+
             ChessMove newMove = new ChessMove(myPosition, newPosition, null);
             validMoves.add(newMove);
         }

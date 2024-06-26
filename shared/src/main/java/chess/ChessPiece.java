@@ -76,7 +76,7 @@ public class ChessPiece {
                 moves.addAll(recursiveMoves.getValidMoves(board, myPosition, pieceType));
                 break;
             case PAWN:
-                moves.addAll(pawnMoves.getValidMoves(board, myPosition, pieceType));
+                moves.addAll(pawnMoves.getValidMoves(board, myPosition));
                 break;
             default:
                 break;

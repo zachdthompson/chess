@@ -32,7 +32,7 @@ public class RecursiveMoves {
         // Two if statements should allow the queen to hit both horizontal and diagonal moves
         if (type == ChessPiece.PieceType.ROOK || type == ChessPiece.PieceType.QUEEN) {
             for (int[] move : possibleStraightMoves) {
-                ArrayList<ChessMove> directionMoves = recursiveFindAllMoves(board, myPosition, null, move);
+                validMoves.addAll(recursiveFindAllMoves(board, myPosition, null, move));
             }
         }
 

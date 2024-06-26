@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import chess.moves.*;
 
 /**
  * Represents a single chess piece
@@ -12,6 +14,14 @@ public class ChessPiece {
 
     private ChessGame.TeamColor pieceColor;
     private ChessPiece.PieceType pieceType;
+
+    // This is only needed for pawns, to allow for extra rules on the first turn
+    private boolean hasMoved = false;
+
+    // Move objects
+    private static final OneSpaceMoves oneSpaceMoves = new OneSpaceMoves();
+    private static final RecursiveMoves recursiveMoves = new RecursiveMoves();
+    private static final PawnMoves pawnMoves = new PawnMoves();
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType pieceType) {
         this.pieceColor = pieceColor;
@@ -44,6 +54,22 @@ public class ChessPiece {
         return pieceType;
     }
 
+
+    /**
+     * @return Returns boolean status if a pieces has moved yet
+     */
+    public boolean getHasMoved() {
+        return hasMoved;
+    }
+
+    /**
+     *
+     * @param hasMoved Boolean to update move status
+     */
+    public void setHasMoved(boolean hasMoved) {
+        this.hasMoved = hasMoved;
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -52,6 +78,25 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+
+        ArrayList<ChessMove> moves = new ArrayList<>();
+
+        // Send the different moves where they need to go
+        switch (pieceType) {
+            case KING:
+            case KNIGHT:
+                moves.addAll(oneSpaceMoves.getValidMoves(board, myPosition, pieceType));
+                break;
+            case QUEEN:
+            case BISHOP:
+            case ROOK:
+                moves.addAll(recursiveMoves.getValidMoves(board, myPosition, pieceType));
+                break;
+            case PAWN:
+                //moves.addAll(pawnMoves.getValidMoves(board, myPosition, pieceType));
+                break;
+        }
+
+        return moves;
     }
 }

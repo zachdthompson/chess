@@ -11,7 +11,7 @@ import java.util.Collection;
 
 public class OneSpaceMoves {
 
-    private final int[][] possibleKnightMoves = {{2, -1}, {2, 1}, {-2, -1}, {-2, 1}};
+    private final int[][] possibleKnightMoves = {{2, -1}, {2, 1}, {-2, -1}, {-2, 1}, {1, -2}, {1, 2}, {-1, -2}, {-1, 2}};
     private final int[][] possibleKingMoves = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}, {1, -1}, {1, 1}, {-1, -1}, {-1, 1}};
 
 

@@ -17,9 +17,6 @@ public class ChessPiece {
     private ChessGame.TeamColor pieceColor;
     private ChessPiece.PieceType pieceType;
 
-    // This is only needed for pawns, to allow for extra rules on the first turn
-    private boolean hasMoved = false;
-
     // Move objects
     private static final OneSpaceMoves oneSpaceMoves = new OneSpaceMoves();
     private static final RecursiveMoves recursiveMoves = new RecursiveMoves();
@@ -56,22 +53,6 @@ public class ChessPiece {
         return pieceType;
     }
 
-
-    /**
-     * @return Returns boolean status if a pieces has moved yet
-     */
-    public boolean getHasMoved() {
-        return hasMoved;
-    }
-
-    /**
-     *
-     * @param hasMoved Boolean to update move status
-     */
-    public void setHasMoved(boolean hasMoved) {
-        this.hasMoved = hasMoved;
-    }
-
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -95,7 +76,9 @@ public class ChessPiece {
                 moves.addAll(recursiveMoves.getValidMoves(board, myPosition, pieceType));
                 break;
             case PAWN:
-                //moves.addAll(pawnMoves.getValidMoves(board, myPosition, pieceType));
+                moves.addAll(pawnMoves.getValidMoves(board, myPosition, pieceType));
+                break;
+            default:
                 break;
         }
 
@@ -107,11 +90,11 @@ public class ChessPiece {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessPiece that = (ChessPiece) o;
-        return hasMoved == that.hasMoved && pieceColor == that.pieceColor && pieceType == that.pieceType;
+        return  pieceColor == that.pieceColor && pieceType == that.pieceType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pieceColor, pieceType, hasMoved);
+        return Objects.hash(pieceColor, pieceType);
     }
 }

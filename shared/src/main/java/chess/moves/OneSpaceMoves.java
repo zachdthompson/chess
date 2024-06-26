@@ -45,23 +45,21 @@ public class OneSpaceMoves {
      * @return An array of valid moves for the given piece
      */
     private ArrayList<ChessMove> findAllMoves(ChessBoard board, ChessPosition myPosition, int[][] possiblePieceMoves) {
-        ArrayList<ChessMove> validMoves = new ArrayList<>();
-        for (int[] move : possiblePieceMoves) {
-            int row = move[0];
-            int col = move[1];
 
-            int newRow = (myPosition.getRow() - 1) + row;
-            int newCol = (myPosition.getColumn() - 1) + col;
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
+
+        for (int[] move : possiblePieceMoves) {
+
+            int newRow = myPosition.getRow() + move[0];
+            int newCol = myPosition.getColumn() + move[1];
 
             // If the move is out of bounds of the board, dont add it
-            if (newRow > 7 || newRow < 0 || newCol > 7 || newCol < 0) {
+            if (newRow > 8 || newRow < 1 || newCol > 8 || newCol < 1) {
                 continue;
             }
 
-
-
             // If its valid, make a new position and add it.
-            ChessPosition newPosition = new ChessPosition(newRow + 1, newCol + 1);
+            ChessPosition newPosition = new ChessPosition(newRow, newCol);
 
             // Check for collision with another friendly piece
             if (board.getPiece(newPosition) != null) {
@@ -70,9 +68,7 @@ public class OneSpaceMoves {
                 }
             }
 
-
-            ChessMove newMove = new ChessMove(myPosition, newPosition, null);
-            validMoves.add(newMove);
+            validMoves.add(new ChessMove(myPosition, newPosition, null));
         }
         return validMoves;
     }

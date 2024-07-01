@@ -102,7 +102,10 @@ public class ChessPiece {
             case QUEEN:
                 moves.addAll(queenMoves.generateMoves(board, myPosition));
                 break;
+        }
 
         return moves;
     }
+
+
 }

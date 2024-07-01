@@ -1,10 +1,10 @@
 package chess;
 
+import chess.moves.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
-
-import chess.moves.*;
 
 /**
  * Represents a single chess piece
@@ -14,17 +14,34 @@ import chess.moves.*;
  */
 public class ChessPiece {
 
-    private ChessGame.TeamColor pieceColor;
-    private ChessPiece.PieceType pieceType;
+    private final ChessGame.TeamColor teamColor;
+    private final ChessPiece.PieceType pieceType;
+    private final Collection<ChessMove> moves = new ArrayList<>();
 
-    // Move objects
-    private static final OneSpaceMoves oneSpaceMoves = new OneSpaceMoves();
-    private static final RecursiveMoves recursiveMoves = new RecursiveMoves();
-    private static final PawnMoves pawnMoves = new PawnMoves();
+    private final BishopMoves bishopMoves = new BishopMoves();
+    private final RookMoves rookMoves = new RookMoves();
+    private final KnightMoves knightMoves = new KnightMoves();
+    private final PawnMoves pawnMoves = new PawnMoves();
+    private final QueenMoves queenMoves = new QueenMoves();
+    private final KingMoves kingMoves = new KingMoves();
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType pieceType) {
-        this.pieceColor = pieceColor;
-        this.pieceType = pieceType;
+
+    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.teamColor = pieceColor;
+        this.pieceType = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return teamColor == that.teamColor && pieceType == that.pieceType && Objects.equals(moves, that.moves);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(teamColor, pieceType, moves);
     }
 
     /**
@@ -43,7 +60,7 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        return pieceColor;
+        return teamColor;
     }
 
     /**
@@ -64,37 +81,27 @@ public class ChessPiece {
 
         ArrayList<ChessMove> moves = new ArrayList<>();
 
-        // Send the different moves where they need to go
         switch (pieceType) {
-            case KING:
+            case PAWN:
+                moves.addAll(pawnMoves.generateMoves(board, myPosition));
+                break;
             case KNIGHT:
-                moves.addAll(oneSpaceMoves.getValidMoves(board, myPosition, pieceType));
+                moves.addAll(knightMoves.generateMoves(board, myPosition));
+                break;
+            case BISHOP:
+                moves.addAll(bishopMoves.generateMoves(board, myPosition));
+                break;
+            case ROOK:
+                moves.addAll(rookMoves.generateMoves(board, myPosition));
                 break;
             case QUEEN:
-            case BISHOP:
-            case ROOK:
-                moves.addAll(recursiveMoves.getValidMoves(board, myPosition, pieceType));
+                moves.addAll(queenMoves.generateMoves(board, myPosition));
                 break;
-            case PAWN:
-                moves.addAll(pawnMoves.getValidMoves(board, myPosition));
-                break;
-            default:
+            case KING:
+                moves.addAll(kingMoves.generateMoves(board, myPosition));
                 break;
         }
 
         return moves;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChessPiece that = (ChessPiece) o;
-        return  pieceColor == that.pieceColor && pieceType == that.pieceType;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(pieceColor, pieceType);
     }
 }

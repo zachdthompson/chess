@@ -55,3 +55,7 @@ fabric.properties
 shared/target
 client/target
 server/target
+
+.settings
+.project
+.DS_Store

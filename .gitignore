@@ -55,7 +55,7 @@ fabric.properties
 shared/target
 client/target
 server/target
-
+*.classpath
 .settings
 .project
 .DS_Store

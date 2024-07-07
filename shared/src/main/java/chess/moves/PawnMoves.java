@@ -7,84 +7,86 @@ import java.util.Collection;
 
 public class PawnMoves extends MoveGenerator {
 
-    private int LEFT = -1;
-    private int RIGHT = 1;
-
     @Override
-    // Default generator, will be overridden
-    public Collection<ChessMove> generateMoves(
-            ChessBoard board,
-            ChessPosition startingPosition
-    ) {
+    public Collection<ChessMove> generateMoves(ChessBoard board, ChessPosition position) {
         ArrayList<ChessMove> moves = new ArrayList<>();
 
-        ChessPiece piece = board.getPiece(startingPosition);
+        ChessGame.TeamColor teamColor = board.getPiece(position).getTeamColor();
 
-        ChessGame.TeamColor teamColor = piece.getTeamColor();
-
-        // If the team is white, "forward" is up, the starting row is 2, and the promotion row is 8
+        // Setup for white
         int forward = 1;
         int startingRow = 2;
         int promotionRow = 8;
 
-        // If its black, "forward" is down, the starting row is 7, and the promotion row is 1
+        // Setup for black
         if (teamColor == ChessGame.TeamColor.BLACK) {
             forward = -1;
             startingRow = 7;
             promotionRow = 1;
         }
 
-        int currentRow = startingPosition.getRow();
-        int currentColumn = startingPosition.getColumn();
+        // Generate the forward one position
+        int forwardOneRow = position.getRow() + forward;
+        ChessPosition forwardOnePosition = new ChessPosition(forwardOneRow, position.getColumn());
+        ChessMove forwardOne = new ChessMove(position, forwardOnePosition, null);
 
-        int nextRow = startingPosition.getRow() + forward;
+        // Cant move at all if we are on the ending rows
+        if (outOfBounds(forwardOne)) {
+            return moves;
+        }
 
-        // Check if we can move forward
-        ChessPosition oneSpaceForward = new ChessPosition(nextRow, currentColumn);
-        ChessMove forwardOne = new ChessMove(startingPosition, oneSpaceForward, null);
-
-        // If we cant move forward one, move on to diagonal detection
-        if (!outOfBounds(forwardOne) && !collisionDetected(board, forwardOne)) {
+        // Forward Moves
+        if (!collisionDetected(board, forwardOne)) {
 
             // Check for promotions
-            if (nextRow == promotionRow) {
-                moves.addAll(promotionMoves(startingPosition, oneSpaceForward));
+            if (forwardOneRow == promotionRow) {
+                moves.addAll(getPromotions(position, forwardOnePosition));
             }
             else {
-
-                if (currentRow == startingRow) {
-                    ChessPosition twoSpacesForward = new ChessPosition(nextRow + forward, currentColumn);
-                    ChessMove forwardTwo = new ChessMove(startingPosition, twoSpacesForward, null);
-
-                    if (!outOfBounds(forwardTwo) && !collisionDetected(board, forwardTwo)) {
-                        moves.add(forwardTwo);
-                    }
-                }
                 moves.add(forwardOne);
             }
+
+            // Check if we can move twice (first turn)
+            if (position.getRow() == startingRow) {
+                int forwardTwoRows = forwardOneRow + forward;
+                ChessPosition forwardTwoPosition = new ChessPosition(forwardTwoRows, position.getColumn());
+                ChessMove forwardTwo = new ChessMove(position, forwardTwoPosition, null);
+
+                if (!collisionDetected(board, forwardTwo)) {
+                    moves.add(forwardTwo);
+                }
+            }
+
         }
 
-        // Check Diagonal Captures
-        ArrayList<ChessMove> attackMoves = new ArrayList<>();
 
-        ChessPosition attackLeftPos = new ChessPosition(nextRow, currentColumn + LEFT);
-        ChessPosition attackRightPos = new ChessPosition(nextRow, currentColumn + RIGHT);
 
-        ChessMove attackLeft = new ChessMove(startingPosition, attackLeftPos, null);
-        ChessMove attackRight = new ChessMove(startingPosition, attackRightPos, null);
+        // Diagonal attacks
+        ChessPosition attackLeftPosition = new ChessPosition(forwardOneRow, position.getColumn() - 1);
+        ChessPosition attackRightPosition = new ChessPosition(forwardOneRow, position.getColumn() + 1);
 
-        attackMoves.add(attackRight);
-        attackMoves.add(attackLeft);
+        ChessMove attackLeft = new ChessMove(position, attackLeftPosition, null);
+        ChessMove attackRight = new ChessMove(position, attackRightPosition, null);
 
-        for (ChessMove move : attackMoves) {
-            ChessPosition endPosition = move.getEndPosition();
-            // If we can capture left
-            if (!outOfBounds(move) && attackDetected(board, move)) {
-                // Check for promotion
-                if (endPosition.getRow() == promotionRow) {
-                    moves.addAll(promotionMoves(startingPosition, endPosition));
-                } else {
-                    moves.add(move);
+        ArrayList<ChessMove> attacks = new ArrayList<>();
+        attacks.add(attackRight);
+        attacks.add(attackLeft);
+
+        // Check left and right attack
+        for (ChessMove attack : attacks) {
+
+            if (outOfBounds(attack)) {
+                continue;
+            }
+
+            if (attackDetected(board, attack)) {
+
+                // Check for promotions
+                if (forwardOneRow == promotionRow) {
+                    moves.addAll(getPromotions(attack.getStartPosition(), attack.getEndPosition()));
+                }
+                else {
+                    moves.add(attack);
                 }
             }
         }
@@ -92,16 +94,15 @@ public class PawnMoves extends MoveGenerator {
         return moves;
     }
 
+    private Collection<ChessMove> getPromotions(ChessPosition startingPosition, ChessPosition endingPosition) {
+        ArrayList<ChessMove> promotions = new ArrayList<>();
 
-    private Collection<ChessMove> promotionMoves(ChessPosition startingPosition, ChessPosition endPosition) {
-        ArrayList<ChessMove> moves = new ArrayList<>();
 
-        moves.add(new ChessMove(startingPosition, endPosition, ChessPiece.PieceType.ROOK));
-        moves.add(new ChessMove(startingPosition, endPosition, ChessPiece.PieceType.QUEEN));
-        moves.add(new ChessMove(startingPosition, endPosition, ChessPiece.PieceType.BISHOP));
-        moves.add(new ChessMove(startingPosition, endPosition, ChessPiece.PieceType.KNIGHT));
+        promotions.add(new ChessMove(startingPosition, endingPosition, ChessPiece.PieceType.QUEEN));
+        promotions.add(new ChessMove(startingPosition, endingPosition, ChessPiece.PieceType.ROOK));
+        promotions.add(new ChessMove(startingPosition, endingPosition, ChessPiece.PieceType.BISHOP));
+        promotions.add(new ChessMove(startingPosition, endingPosition, ChessPiece.PieceType.KNIGHT));
 
-        return moves;
+        return promotions;
     }
-
 }

@@ -27,6 +27,29 @@ public class ChessBoard {
         board[position.getRow() -1][position.getColumn() - 1] = piece;
     }
 
+    public void movePiece(ChessMove move) {
+        int startRow = move.getStartPosition().getRow() - 1;
+        int startColumn = move.getStartPosition().getColumn() - 1;
+        int endRow = move.getEndPosition().getRow() - 1;
+        int endColumn = move.getEndPosition().getColumn() - 1;
+
+        // Make the move
+        ChessPiece startPiece = getPiece(move.getStartPosition());
+        // Check for pawn promotion
+        if (startPiece.getPieceType() != ChessPiece.PieceType.PAWN) {
+            board[endRow][endColumn] = startPiece;
+        }
+        else if (move.getPromotionPiece() != null) {
+            board[endRow][endColumn] = new ChessPiece(startPiece.getTeamColor(), move.getPromotionPiece());
+        }
+        else {
+            board[endRow][endColumn] = startPiece;
+        }
+
+        // Delete the old piece
+        board[startRow][startColumn] = null;
+    }
+
     /**
      * Gets a chess piece on the chessboard
      *
@@ -35,7 +58,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return board[position.getRow() -1][position.getColumn() - 1];
+        return board[position.getRow() - 1][position.getColumn() - 1];
     }
 
     /**

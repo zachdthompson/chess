@@ -49,6 +49,10 @@ public class ChessGame {
         BLACK
     }
 
+    public ChessGame getCurrentGame() {
+        return this;
+    }
+
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -58,7 +62,14 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece checkPiece = chessBoard.getPiece(startPosition);
-        return new ArrayList<>(checkPiece.pieceMoves(chessBoard, startPosition));
+        Collection<ChessMove> validMoves = checkPiece.pieceMoves(chessBoard, startPosition);
+
+        teamTurn = checkPiece.getTeamColor();
+
+        // Remove if the move will endanger the king
+        validMoves.removeIf(this::moveWillEndangerKing);
+
+        return validMoves;
     }
 
     /**
@@ -79,6 +90,11 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid move, wait your turn!");
         }
 
+        // Before any move can be made, we have to make sure the king is not in check
+        if (isInCheck(teamTurn) && chessBoard.getPiece(move.getStartPosition()).getPieceType() != ChessPiece.PieceType.KING) {
+            throw new InvalidMoveException("Invalid move, your king is in check!");
+        }
+
         ArrayList<ChessMove> possibleMoves = new ArrayList<>(validMoves(move.getStartPosition()));
 
         // Check if the desired move is valid
@@ -86,11 +102,9 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid move: " + move);
         }
 
-        //If it' s the king, make sure the move won't put them in check
-        if (chessBoard.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.KING) {
-            if (moveWillEndangerKing(move)) {
-                throw new InvalidMoveException("That move puts your king in check!");
-            }
+        // Check if moving will endanger the king
+        if (moveWillEndangerKing(move)) {
+            throw new InvalidMoveException("That move puts your king in check!");
         }
 
         // Do move here
@@ -121,6 +135,26 @@ public class ChessGame {
             opposingTeam = TeamColor.BLACK;
         }
 
+        // Get all our remaining pieces
+        Collection<ChessPiece> ourPieces = getTeamPieces(teamColor);
+
+        // Find our king
+        ChessPiece ourKing = null;
+        for (ChessPiece piece : ourPieces) {
+            if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                ourKing = piece;
+                break;
+            }
+        }
+
+        // If no king is found, it cant be in danger
+        if (ourKing == null) {
+            return false;
+        }
+
+        ChessPosition ourKingPosition = chessBoard.getPiecePosition(ourKing);
+
+
         // Get all their remaining pieces
         Collection<ChessPiece> opposingPieces = getTeamPieces(opposingTeam);
 
@@ -128,10 +162,14 @@ public class ChessGame {
         ArrayList<ChessMove> validOpponentMoves = new ArrayList<>();
 
         for (ChessPiece opposingPiece : opposingPieces) {
-            ChessPosition currentPiecePosition =
-            validOpponentMoves.addAll(opposingPiece.pieceMoves(chessBoard, ))
+            validOpponentMoves.addAll(opposingPiece.pieceMoves(chessBoard, chessBoard.getPiecePosition(opposingPiece)));
         }
         // TODO: Check if those moves correspond to our king
+        for (ChessMove move : validOpponentMoves) {
+            if (move.getEndPosition().equals(ourKingPosition)) {
+                return true;
+            }
+        }
 
         return false;
     }
@@ -184,6 +222,46 @@ public class ChessGame {
         return chessBoard;
     }
 
+    public boolean moveWillEndangerKing(ChessMove move) {
+
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ChessPiece startPiece = chessBoard.getPiece(start);
+        ChessPiece endPiece = chessBoard.getPiece(end);
+
+        // Make the move temporarily
+        chessBoard.movePiece(move);
+
+        // Check if this puts the king in check
+        boolean endangersKing = isInCheck(teamTurn);
+
+        // Revert the move
+        chessBoard.addPiece(start, startPiece);
+        chessBoard.addPiece(end, endPiece);
+
+        return endangersKing;
+    }
+
+    /**
+     * Gets all the pieces for the given team
+     * @param teamColor The team color you want all the pieces for
+     * @return ArrayList of pieces
+     */
+    private Collection<ChessPiece> getTeamPieces(TeamColor teamColor) {
+        ArrayList<ChessPiece> pieces = new ArrayList<>();
+
+        for (int row = 1; row < 9; row++) {
+            for (int col = 1; col < 9; col++) {
+                ChessPiece piece = chessBoard.getPiece(new ChessPosition(row, col));
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    pieces.add(piece);
+                }
+            }
+        }
+
+        return pieces;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -195,36 +273,5 @@ public class ChessGame {
     @Override
     public int hashCode() {
         return Objects.hash(teamTurn, chessBoard);
-    }
-
-    private boolean moveWillEndangerKing(ChessMove move) {
-
-        // Make a local copy of the board
-        ChessBoard copyBoard = chessBoard.clone();
-
-        // Make the move on the copy and check if it puts the king in check
-        copyBoard.movePiece(move);
-
-        return isInCheckmate(teamTurn);
-    }
-
-    /**
-     * Gets all the pieces for the given team
-     * @param teamColor The team color you want all the pieces for
-     * @return ArrayList of pieces
-     */
-    private Collection<ChessPiece> getTeamPieces(TeamColor teamColor) {
-        ArrayList<ChessPiece> pieces = new ArrayList<>();
-
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                ChessPiece piece = chessBoard.getPiece(new ChessPosition(row, col));
-                if (piece.getTeamColor() == teamColor) {
-                    pieces.add(piece);
-                }
-            }
-        }
-
-        return pieces;
     }
 }

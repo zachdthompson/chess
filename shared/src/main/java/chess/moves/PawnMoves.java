@@ -8,7 +8,10 @@ import java.util.Collection;
 public class PawnMoves extends MoveGenerator {
 
     @Override
-    public Collection<ChessMove> generateMoves(ChessBoard board, ChessPosition position) {
+    public Collection<ChessMove> generateMoves(
+            ChessBoard board,
+            ChessPosition position
+    ) {
         ArrayList<ChessMove> moves = new ArrayList<>();
 
         ChessGame.TeamColor teamColor = board.getPiece(position).getTeamColor();

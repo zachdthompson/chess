@@ -42,7 +42,9 @@ public class ChessBoard implements Cloneable {
         ChessPiece startPiece = getPiece(move.getStartPosition());
         // Check for pawn promotion
         if (move.getPromotionPiece() != null) {
-            board[endRow][endColumn] = new ChessPiece(startPiece.getTeamColor(), move.getPromotionPiece(), endPosition);
+            ChessPiece promotionPiece = new ChessPiece(startPiece.getTeamColor(), move.getPromotionPiece());
+            promotionPiece.setCurrentPosition(endPosition);
+            board[endRow][endColumn] = promotionPiece;
         }
         else {
             board[endRow][endColumn] = startPiece;
@@ -97,52 +99,61 @@ public class ChessBoard implements Cloneable {
         for (int i = 0; i < 8; i++) {
             // Set their position
             ChessPosition position = new ChessPosition(frontRow, i);
-            ChessPiece pawn = new ChessPiece(teamColor, ChessPiece.PieceType.PAWN, position);
+            ChessPiece pawn = new ChessPiece(teamColor, ChessPiece.PieceType.PAWN);
             // Place them
             board[frontRow][i] = pawn;
+            pawn.setCurrentPosition(position);
         }
+
+        // Create pieces
+        ChessPiece rook1 = new ChessPiece(teamColor, ChessPiece.PieceType.ROOK);
+        ChessPiece rook2 = new ChessPiece(teamColor, ChessPiece.PieceType.ROOK);
+        ChessPiece knight1 = new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT);
+        ChessPiece knight2 = new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT);
+        ChessPiece bishop1 = new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP);
+        ChessPiece bishop2 = new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP);
+        ChessPiece king = new ChessPiece(teamColor, ChessPiece.PieceType.KING);
+        ChessPiece queen = new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN);
 
         // Back row
         // For each piece we generate its position, then place it
 
         // 7
         ChessPosition rookPosition1 = new ChessPosition(backRow, 7);
-        ChessPiece rook1 = new ChessPiece(teamColor, ChessPiece.PieceType.ROOK, rookPosition1);
+        rook1.setCurrentPosition(rookPosition1);
         board[backRow][7] = rook1;
 
         // 6
         ChessPosition knightPosition1 = new ChessPosition(backRow, 6);
-        ChessPiece knight1 = new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT, knightPosition1);
+        knight1.setCurrentPosition(knightPosition1);
         board[backRow][6] = knight1;
 
         // 5
         ChessPosition bishopPosition1 = new ChessPosition(backRow, 5);
-        ChessPiece bishop1 = new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP, bishopPosition1);
+        bishop1.setCurrentPosition(bishopPosition1);
         board[backRow][5] = bishop1;
 
         // 4
         ChessPosition kingPosition = new ChessPosition(backRow, 4);
-        ChessPiece king = new ChessPiece(teamColor, ChessPiece.PieceType.KING, kingPosition);
         board[backRow][4] = king;
 
         // 3
         ChessPosition queenPosition = new ChessPosition(backRow, 3);
-        ChessPiece queen = new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN, queenPosition);
         board[backRow][3] = queen;
 
         // 2
         ChessPosition bishopPosition2 = new ChessPosition(backRow, 2);
-        ChessPiece bishop2 = new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP, bishopPosition2);
+        bishop2.setCurrentPosition(bishopPosition2);
         board[backRow][2] = bishop2;
 
         //1
         ChessPosition knightPosition2 = new ChessPosition(backRow, 1);
-        ChessPiece knight2 = new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT, knightPosition2);
+        knight2.setCurrentPosition(knightPosition2);
         board[backRow][1] = knight2;
 
         // 0
         ChessPosition rookPosition2 = new ChessPosition(backRow, 0);
-        ChessPiece rook2 = new ChessPiece(teamColor, ChessPiece.PieceType.ROOK, rookPosition2);
+        rook2.setCurrentPosition(rookPosition2);
         board[backRow][0] = rook2;
     }
 

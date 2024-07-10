@@ -14,7 +14,12 @@ public class ChessBoard {
     private final ChessPiece[][] board = new ChessPiece[8][8];
 
     public ChessBoard() {
-        
+    }
+
+    public ChessBoard(ChessBoard boardToCopy) {
+        for (int i = 0; i < 8; i++) {
+            System.arraycopy(boardToCopy.board[i], 0, board[i], 0, 8);
+        }
     }
 
     /**
@@ -36,7 +41,6 @@ public class ChessBoard {
         // Where it will end up
         int endRow = move.getEndPosition().getRow() - 1;
         int endColumn = move.getEndPosition().getColumn() - 1;
-        ChessPosition endPosition = new ChessPosition(endRow, endColumn);
 
         // Make the move
         ChessPiece startPiece = getPiece(move.getStartPosition());

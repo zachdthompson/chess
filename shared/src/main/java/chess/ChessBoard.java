@@ -9,7 +9,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
+public class ChessBoard implements Cloneable {
 
     private final ChessPiece[][] board = new ChessPiece[8][8];
 
@@ -28,22 +28,26 @@ public class ChessBoard {
     }
 
     public void movePiece(ChessMove move) {
+
+        // Where the piece starts
         int startRow = move.getStartPosition().getRow() - 1;
         int startColumn = move.getStartPosition().getColumn() - 1;
+
+        // Where it will end up
         int endRow = move.getEndPosition().getRow() - 1;
         int endColumn = move.getEndPosition().getColumn() - 1;
+        ChessPosition endPosition = new ChessPosition(endRow, endColumn);
 
         // Make the move
         ChessPiece startPiece = getPiece(move.getStartPosition());
         // Check for pawn promotion
-        if (startPiece.getPieceType() != ChessPiece.PieceType.PAWN) {
-            board[endRow][endColumn] = startPiece;
-        }
-        else if (move.getPromotionPiece() != null) {
-            board[endRow][endColumn] = new ChessPiece(startPiece.getTeamColor(), move.getPromotionPiece());
+        if (move.getPromotionPiece() != null) {
+            board[endRow][endColumn] = new ChessPiece(startPiece.getTeamColor(), move.getPromotionPiece(), endPosition);
         }
         else {
             board[endRow][endColumn] = startPiece;
+            // Update position
+            startPiece.setCurrentPosition(endPosition);
         }
 
         // Delete the old piece
@@ -89,27 +93,57 @@ public class ChessBoard {
             backRow = 7;
         }
 
-        ChessPiece pawn = new ChessPiece(teamColor, ChessPiece.PieceType.PAWN);
-        ChessPiece rook = new ChessPiece(teamColor, ChessPiece.PieceType.ROOK);
-        ChessPiece knight = new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT);
-        ChessPiece bishop = new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP);
-        ChessPiece queen = new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN);
-        ChessPiece king = new ChessPiece(teamColor, ChessPiece.PieceType.KING);
-
         // Pawns
         for (int i = 0; i < 8; i++) {
+            // Set their position
+            ChessPosition position = new ChessPosition(frontRow, i);
+            ChessPiece pawn = new ChessPiece(teamColor, ChessPiece.PieceType.PAWN, position);
+            // Place them
             board[frontRow][i] = pawn;
         }
 
         // Back row
-        board[backRow][7] = rook;
-        board[backRow][6] = knight;
-        board[backRow][5] = bishop;
+        // For each piece we generate its position, then place it
+
+        // 7
+        ChessPosition rookPosition1 = new ChessPosition(backRow, 7);
+        ChessPiece rook1 = new ChessPiece(teamColor, ChessPiece.PieceType.ROOK, rookPosition1);
+        board[backRow][7] = rook1;
+
+        // 6
+        ChessPosition knightPosition1 = new ChessPosition(backRow, 6);
+        ChessPiece knight1 = new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT, knightPosition1);
+        board[backRow][6] = knight1;
+
+        // 5
+        ChessPosition bishopPosition1 = new ChessPosition(backRow, 5);
+        ChessPiece bishop1 = new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP, bishopPosition1);
+        board[backRow][5] = bishop1;
+
+        // 4
+        ChessPosition kingPosition = new ChessPosition(backRow, 4);
+        ChessPiece king = new ChessPiece(teamColor, ChessPiece.PieceType.KING, kingPosition);
         board[backRow][4] = king;
+
+        // 3
+        ChessPosition queenPosition = new ChessPosition(backRow, 3);
+        ChessPiece queen = new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN, queenPosition);
         board[backRow][3] = queen;
-        board[backRow][2] = bishop;
-        board[backRow][1] = knight;
-        board[backRow][0] = rook;
+
+        // 2
+        ChessPosition bishopPosition2 = new ChessPosition(backRow, 2);
+        ChessPiece bishop2 = new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP, bishopPosition2);
+        board[backRow][2] = bishop2;
+
+        //1
+        ChessPosition knightPosition2 = new ChessPosition(backRow, 1);
+        ChessPiece knight2 = new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT, knightPosition2);
+        board[backRow][1] = knight2;
+
+        // 0
+        ChessPosition rookPosition2 = new ChessPosition(backRow, 0);
+        ChessPiece rook2 = new ChessPiece(teamColor, ChessPiece.PieceType.ROOK, rookPosition2);
+        board[backRow][0] = rook2;
     }
 
     @Override
@@ -123,5 +157,15 @@ public class ChessBoard {
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(board);
+    }
+
+    @Override
+    public ChessBoard clone() {
+        try {
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return (ChessBoard) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

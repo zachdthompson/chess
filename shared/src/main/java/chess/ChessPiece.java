@@ -18,6 +18,9 @@ public class ChessPiece {
   private final ChessPiece.PieceType pieceType;
   private final Collection<ChessMove> moves = new ArrayList<>();
 
+
+  ChessPosition currentPosition;
+
   private final BishopMoves bishopMoves = new BishopMoves();
   private final RookMoves rookMoves = new RookMoves();
   private final KnightMoves knightMoves = new KnightMoves();
@@ -25,9 +28,10 @@ public class ChessPiece {
   private final QueenMoves queenMoves = new QueenMoves();
   private final KingMoves kingMoves = new KingMoves();
 
-  public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+  public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type, ChessPosition currentPosition) {
     this.teamColor = pieceColor;
     this.pieceType = type;
+    this.currentPosition = currentPosition;
   }
 
   @Override
@@ -55,6 +59,14 @@ public class ChessPiece {
     KNIGHT,
     ROOK,
     PAWN
+  }
+
+  public ChessPosition getCurrentPosition() {
+      return currentPosition;
+  }
+
+  public void setCurrentPosition(ChessPosition currentPosition) {
+      this.currentPosition = currentPosition;
   }
 
   /**

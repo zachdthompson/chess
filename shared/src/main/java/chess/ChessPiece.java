@@ -18,9 +18,6 @@ public class ChessPiece {
   private final ChessPiece.PieceType pieceType;
   private final Collection<ChessMove> moves = new ArrayList<>();
 
-
-  private ChessPosition currentPosition = null;
-
   private final BishopMoves bishopMoves = new BishopMoves();
   private final RookMoves rookMoves = new RookMoves();
   private final KnightMoves knightMoves = new KnightMoves();
@@ -48,7 +45,7 @@ public class ChessPiece {
     return Objects.hash(teamColor, pieceType, moves);
   }
 
-  /**
+    /**
    * The various different chess piece options
    */
   public enum PieceType {
@@ -58,14 +55,6 @@ public class ChessPiece {
     KNIGHT,
     ROOK,
     PAWN
-  }
-
-  public ChessPosition getCurrentPosition() {
-      return currentPosition;
-  }
-
-  public void setCurrentPosition(ChessPosition currentPosition) {
-      this.currentPosition = currentPosition;
   }
 
   /**

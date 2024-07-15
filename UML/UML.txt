@@ -1,0 +1,126 @@
+actor Client
+participant Server
+participant Handler
+participant Service
+participant DataAccess
+database db
+
+entryspacing 0.9
+group #navy Registration #white
+Client -> Server: [POST] /user\n{"username":" ", "password":" ", "email":" "}
+Server -> Handler: {"username":" ", "password":" ", "email":" "}
+Handler -> Service: register(RegisterRequest)
+Service -> DataAccess: getUser(username)
+DataAccess -> db: SELECT username FROM user
+DataAccess --> Service: null
+Service -> DataAccess:createUser(userData)
+DataAccess -> db: INSERT username, password, email INTO user
+Service -> DataAccess:createAuth(authData)
+DataAccess -> db: INSERT username, auth INTO auth
+Service --> Handler: RegisterResult
+Handler --> Server: {"username" : " ", "authToken" : " "}
+Server --> Client: 200\n{"username" : " ", "authToken" : " "}
+end
+
+group #orange Login #white
+Client -> Server: [POST] /session\n{username, password}
+Server -> Handler: {"username":" ", "password":" "}
+Handler -> Service: login(LoginRequest)
+Service -> DataAccess: getUser(username)
+// Make sure passwords are stored as a hash
+DataAccess -> db: SELECT username, password FROM user
+DataAccess --> Service: username, password
+// Verify hashes match, create auth token if they do
+Service -> DataAccess: createAuth(username)
+DataAccess -> db: INSERT username, authToken INTO auth
+DataAccess --> Service: authToken
+Service --> Handler: LoginResult
+// Send back username and auth token as JSON
+Handler --> Server: JSON = {"username" : "<username>", "authToken" : "<token>"}
+// Send 200 response with headers
+Server --> Client: Response = 200 \n Headers = {"username" : "<username>", "authToken" : "<token>"}
+end
+
+group #green Logout #white
+Client -> Server: [DELETE] /session\nauthToken
+// Ensure auth token is valid
+Server -> Handler: Headers = {"username" : "<username>", "authToken" : "<token>"}
+Handler -> Service: logout(username)
+Service -> DataAccess: getAuth(username)
+DataAccess -> db: SELECT authToken FROM auth WHERE username = <username>
+DataAccess --> Service: authToken
+// Handler makes sure the auth token matches the one stored for the user
+Service --> Handler: LogoutResult
+Handler --> Server: JSON = {}
+Server --> Client: Response = 200 \n Headers = {}
+
+end
+
+group #red List Games #white
+Client -> Server: [GET] /game\nauthToken
+Server -> Handler: Header = {"authorization": "<authToken>"}
+Handler -> Service: listGames(ListGameRequest)
+// Validate user
+Service -> DataAccess: getAuth(authToken)
+DataAccess -> db: SELECT authToken, username FROM auth
+DataAccess --> Service: username, authToken
+// If valid, list games
+Service -> DataAccess: listGames()
+DataAccess-> db: SELECT games FROM games
+DataAccess --> Service: GameList
+Service --> Handler: ListGameResult
+Handler --> Server: JSON = { "games": [<list of games]]}
+// I think this might be better as local storage
+Server --> Client: Response = 200\nBody = { "games": [<list of games>]}
+end
+
+group #purple Create Game #white
+Client -> Server: [POST] /game\nauthToken\n{gameName}
+Server -> Handler: Header = {"authorization": "<authToken>"}\Body = { "gameName":" " }
+Handler -> Service: createGame(CreateGameRequest)
+Service -> DataAccess: getAuth(authToken)
+DataAccess -> db: SELECT authToken, username FROM auth
+// Authorize user
+DataAccess --> Service: username, authToken
+// Create game
+Service -> DataAccess: createGame(gameName)
+DataAccess -> db: INSERT gameName INTO game
+DataAccess --> Service: gameID
+// Pass back
+Service --> Handler: CreateGameResult
+Handler --> Server: JSON = { "gameID": "<gameID>"}
+Server --> Client: Response = 200\nBody = { "gameID": "<gameID>"}
+end
+
+group #yellow Join Game #black
+Client -> Server: [PUT] /game\nauthToken\n{playerColor, gameID}
+Server -> Handler: Header = {"authorization": "<authToken>"}\Body = { "playerColor":"<playerColor>", "gameID": "<gameID>"}
+Handler -> Service: joinGame(JoinGameRequest)
+// Authorize user
+Service -> DataAccess: getAuth(authToken)
+DataAccess -> db: SELECT authToken, username FROM auth
+DataAccess --> Service: username, authToken
+// Find game
+Service -> DataAccess: getGame(gameID)
+DataAccess -> db: SELECT game FROM games
+DataAccess --> Service: game
+// Join game
+DataAccess -> db: INSERT player, color INTO games
+Service --> Handler: JoinGameResult
+Handler --> Server: JSON = {}
+Server --> Client: Response = 200\nBody = {}
+end
+
+group #gray Clear application #white
+Client -> Server: [DELETE] /db
+// Why are we not authorizing this??
+// Lab instructions for 3 dont have any auth tokens
+Server -> Handler: Header = {} \nBody = {}
+Handler -> Service: clearDatabase(ClearDatabaseRequest)
+Service -> DataAccess: clear()
+DataAccess -> db: DELETE FROM <table> (For all tables)
+DataAccess --> Service: null
+Service --> Handler: ClearDatabaseResult
+Handler --> Server: JSON = {}
+Server --> Client: Response = 200\n Body = {}
+end

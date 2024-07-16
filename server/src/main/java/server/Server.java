@@ -1,5 +1,6 @@
 package server;
 
+import dataaccess.DataAccess;
 import dataaccess.dao.MemoryAuthDAO;
 import dataaccess.dao.MemoryGameDAO;
 import dataaccess.dao.MemoryUserDAO;

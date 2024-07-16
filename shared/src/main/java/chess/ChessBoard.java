@@ -85,11 +85,9 @@ public class ChessBoard {
      */
     public void resetBoard() {
 
-        // Reset Board
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                board[i][j] = null;
-            }
+        // Better method for resetting board
+        for (ChessPiece[] row : board) {
+            Arrays.fill(row, null);
         }
         for (ChessGame.TeamColor color : ChessGame.TeamColor.values()) {
             placePieces(color);

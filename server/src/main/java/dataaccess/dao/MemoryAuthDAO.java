@@ -32,6 +32,25 @@ public class MemoryAuthDAO {
         return authentications.get(username);
     }
 
+    public AuthData getAuthByToken(String token) {
+        for (AuthData auth : authentications.values()) {
+            if (auth.authToken().equals(token)) {
+                return auth;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Deletes the auth token from the list of valid authentications
+     * @param authToken The token to remove
+     */
+    public void deleteAuth(String authToken) {
+        AuthData auth = getAuthByToken(authToken);
+        String username = auth.username();
+        authentications.remove(username);
+    }
+
     /**
      * Clears all authentications
      */

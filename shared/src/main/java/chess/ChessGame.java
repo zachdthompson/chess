@@ -249,32 +249,33 @@ public class ChessGame {
         return endangersKing;
     }
 
-    private Collection<ChessPiece> attackersAtSpace (ChessPosition target) {
+    private Collection<ChessPiece> attackersAtSpace(ChessPosition target) {
         TeamColor targetTeam = chessBoard.getPiece(target).getTeamColor();
-        Collection<ChessPiece> attackerPiece = new ArrayList<>();
+        Collection<ChessPiece> attackingPieces = new ArrayList<>();
 
-
-        // We need to see if anyone can attack a target space where our king is
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
-                ChessPiece piece = chessBoard.getPiece(new ChessPosition(row, col));
+                ChessPosition currentPosition = new ChessPosition(row, col);
+                ChessPiece piece = chessBoard.getPiece(currentPosition);
                 if (piece != null && !piece.getTeamColor().equals(targetTeam)) {
-                    // Get its valid moves
-                    Collection<ChessMove> validAttackerMoves = piece.pieceMoves(chessBoard, new ChessPosition(row, col));
-
-                    // Check if any of those moves end on our king
-                    for (ChessMove move : validAttackerMoves) {
-                        if (move.getEndPosition().equals(target)) {
-                            // Add it in
-                            attackerPiece.add(chessBoard.getPiece(move.getStartPosition()));
-                        }
+                    if (canAttackPosition(piece, currentPosition, target)) {
+                        attackingPieces.add(piece);
                     }
                 }
             }
         }
 
-        return attackerPiece;
+        return attackingPieces;
+    }
 
+    private boolean canAttackPosition(ChessPiece piece, ChessPosition currentPosition, ChessPosition targetPosition) {
+        Collection<ChessMove> validMoves = piece.pieceMoves(chessBoard, currentPosition);
+        for (ChessMove move : validMoves) {
+            if (move.getEndPosition().equals(targetPosition)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

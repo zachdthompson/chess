@@ -43,8 +43,7 @@ public class ChessPosition {
             return false;
         }
         ChessPosition that = (ChessPosition) o;
-        return row == that.row
-                && column == that.column;
+        return row == that.row && column == that.column;
     }
 
     @Override

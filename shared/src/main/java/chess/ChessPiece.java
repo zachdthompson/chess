@@ -39,9 +39,7 @@ public class ChessPiece {
         return false;
     }
     ChessPiece that = (ChessPiece) o;
-    return teamColor == that.teamColor
-            && pieceType == that.pieceType
-            && Objects.equals(moves, that.moves);
+    return teamColor == that.teamColor && pieceType == that.pieceType && Objects.equals(moves, that.moves);
   }
 
   @Override

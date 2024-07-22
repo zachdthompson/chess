@@ -12,9 +12,7 @@ public record UserData(String username, String password, String email) {
             return false;
         }
         UserData userData = (UserData) o;
-        return Objects.equals(email, userData.email)
-                && Objects.equals(username, userData.username)
-                && Objects.equals(password, userData.password);
+        return Objects.equals(email, userData.email) && Objects.equals(username, userData.username) && Objects.equals(password, userData.password);
     }
 
     @Override

@@ -9,18 +9,18 @@ import java.util.Collection;
 
 public class KnightMoves extends MoveGenerator {
 
-    private final int[] K_UP_LEFT = {2, -1};
-    private final int[] K_DOWN_LEFT = {-2, -1};
-    private final int[] K_UP_RIGHT = {2, 1};
-    private final int[] K_DOWN_RIGHT = {-2, 1};
+    private final int[] kUpLeft = {2, -1};
+    private final int[] kDownLeft = {-2, -1};
+    private final int[] kUpRight = {2, 1};
+    private final int[] kDownRight = {-2, 1};
 
-    private final int[] LEFT_UP = {1, -2};
-    private final int[] RIGHT_UP = {1, 2};
-    private final int[] LEFT_DOWN = {-1, -2};
-    private final int[] RIGHT_DOWN = {-1, 2};
+    private final int[] leftUp = {1, -2};
+    private final int[] rightUp = {1, 2};
+    private final int[] leftDown = {-1, -2};
+    private final int[] rightDown = {-1, 2};
 
-    private final int[][] validKnightMoves = {K_UP_LEFT, K_DOWN_LEFT, K_UP_RIGHT, K_DOWN_RIGHT,
-    LEFT_UP, RIGHT_UP, LEFT_DOWN, RIGHT_DOWN};
+    private final int[][] validKnightMoves = {kUpLeft, kDownLeft, kUpRight, kDownRight,
+            leftUp, rightUp, leftDown, rightDown};
 
     @Override
     // Default generator, will be overridden

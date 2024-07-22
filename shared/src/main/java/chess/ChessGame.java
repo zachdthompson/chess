@@ -261,20 +261,28 @@ public class ChessGame {
                 if (piece != null && !piece.getTeamColor().equals(targetTeam)) {
                     // Get its valid moves
                     Collection<ChessMove> validAttackerMoves = piece.pieceMoves(chessBoard, new ChessPosition(row, col));
-
-                    // Check if any of those moves end on our king
-                    for (ChessMove move : validAttackerMoves) {
-                        if (move.getEndPosition().equals(target)) {
-                            // Add it in
-                            attackerPiece.add(chessBoard.getPiece(move.getStartPosition()));
-                        }
-                    }
+                    attackerPiece.add(attackerMoves(validAttackerMoves, target));
                 }
             }
         }
 
         return attackerPiece;
 
+    }
+
+    private ChessPiece attackerMoves(
+            Collection<ChessMove> validAttackerMoves,
+            ChessPosition target
+    ) {
+        Collection<ChessPiece> attackerMoves = new ArrayList<>();
+        // Check if any of those moves end on our king
+        for (ChessMove move : validAttackerMoves) {
+            if (move.getEndPosition().equals(target)) {
+                // Add it in
+                attackerMoves.add(chessBoard.getPiece(move.getStartPosition()));
+            }
+        }
+        return null;
     }
 
     /**
@@ -320,10 +328,15 @@ public class ChessGame {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessGame chessGame = (ChessGame) o;
-        return teamTurn == chessGame.teamTurn && Objects.equals(chessBoard, chessGame.chessBoard);
+        return teamTurn == chessGame.teamTurn
+                && Objects.equals(chessBoard, chessGame.chessBoard);
     }
 
     @Override

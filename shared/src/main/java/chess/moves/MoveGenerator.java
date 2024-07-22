@@ -8,22 +8,21 @@ import java.util.Collection;
 public class MoveGenerator {
 
     // Vertical Moves
-    private final int[] UP = {1, 0};
-    private final int[] DOWN = {-1, 0};
-    private final int[] LEFT = {0, -1};
-    private final int[] RIGHT = {0, 1};
-    protected final int[][] verticalMoves = {UP, LEFT, DOWN, RIGHT};
+    private final int[] up = {1, 0};
+    private final int[] down = {-1, 0};
+    private final int[] left = {0, -1};
+    private final int[] right = {0, 1};
+    protected final int[][] verticalMoves = {up, left, down, right};
 
     // Diagonal Moves
-    private final int[] UP_LEFT = {1, -1};
-    private final int[] UP_RIGHT = {1, 1};
-    private final int[] DOWN_LEFT = {-1, -1};
-    private final int[] DOWN_RIGHT = {-1, 1};
-    protected final int[][] diagonalMoves = {UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT};
+    private final int[] upLeft = {1, -1};
+    private final int[] upRight = {1, 1};
+    private final int[] downLeft = {-1, -1};
+    private final int[] downRight = {-1, 1};
+    protected final int[][] diagonalMoves = {upLeft, upRight, downLeft, downRight};
 
     // All Straight moves
-    protected final int[][] allStraightMoves = {UP, LEFT, DOWN, RIGHT,
-                                              UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT};
+    protected final int[][] allStraightMoves = {up, left, down, right, upLeft, upRight, downLeft, downRight};
 
 
     // Default generator, will be overridden

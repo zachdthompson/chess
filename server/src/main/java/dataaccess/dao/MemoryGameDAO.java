@@ -28,7 +28,8 @@ public class MemoryGameDAO {
         GameData newGameData = new GameData(
                 newGameID,
                 null,
-                null, gameName,
+                null,
+                gameName,
                 new ChessGame()
         );
 

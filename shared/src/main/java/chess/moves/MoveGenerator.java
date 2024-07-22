@@ -22,7 +22,8 @@ public class MoveGenerator {
     protected final int[][] diagonalMoves = {upLeft, upRight, downLeft, downRight};
 
     // All Straight moves
-    protected final int[][] allStraightMoves = {up, left, down, right, upLeft, upRight, downLeft, downRight};
+    protected final int[][] allStraightMoves = {up, left, down, right,
+            upLeft, upRight, downLeft, downRight};
 
 
     // Default generator, will be overridden

@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class MemoryAuthDAO {
 
-    private final Map<String, AuthData> authentications = new HashMap<>();
+    private final Map<AuthData, String> authentications = new HashMap<>();
 
     public MemoryAuthDAO() {
     }
@@ -19,21 +19,17 @@ public class MemoryAuthDAO {
      */
     public AuthData createAuth(String username) {
         AuthData auth = new AuthData(AuthData.createToken(), username);
-        authentications.put(username, auth);
+        authentications.put(auth, username);
         return auth;
     }
 
     /**
-     * Gets the auth token for the given username
-     * @param username The username of the user we want the token from
-     * @return String of the AuthToken
+     * Gets auth data from a token
+     * @param token The authToken of the user
+     * @return The AuthData object of the token
      */
-    public AuthData getAuth(String username) {
-        return authentications.get(username);
-    }
-
     public AuthData getAuthByToken(String token) {
-        for (AuthData auth : authentications.values()) {
+        for (AuthData auth : authentications.keySet()) {
             if (auth.authToken().equals(token)) {
                 return auth;
             }
@@ -47,8 +43,7 @@ public class MemoryAuthDAO {
      */
     public void deleteAuth(String authToken) {
         AuthData auth = getAuthByToken(authToken);
-        String username = auth.username();
-        authentications.remove(username);
+        authentications.remove(auth);
     }
 
     /**

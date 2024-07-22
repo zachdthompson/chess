@@ -1,18 +1,15 @@
 package service;
 
 import dataaccess.*;
-import dataaccess.dao.MemoryAuthDAO;
 import dataaccess.dao.MemoryUserDAO;
 import model.*;
 
 public class UserService {
 
     private final MemoryUserDAO userDAO;
-    private final MemoryAuthDAO authDAO;
 
-    public UserService(MemoryUserDAO userDAO, MemoryAuthDAO authDAO) {
+    public UserService(MemoryUserDAO userDAO) {
         this.userDAO = userDAO;
-        this.authDAO = authDAO;
     }
 
     /**
@@ -22,7 +19,7 @@ public class UserService {
      * @throws UserExistsException Thrown if the username exists already
      * @throws BadRequestException Thrown if password is empty
      */
-    public AuthData createUser(UserData user) throws UserExistsException, BadRequestException {
+    public UserData createUser(UserData user) throws UserExistsException, BadRequestException {
 
         UserData checkUsername = userDAO.getUser(user.username());
 
@@ -37,38 +34,16 @@ public class UserService {
         // Create if no errors
         else {
             userDAO.createUser(user);
-            return authDAO.createAuth(user.username());
-        }
-    }
-
-    public AuthData loginUser(UserData user) throws UnauthorizedException {
-
-        // This will throw an error if it fails
-        validateUser(user);
-
-        return authDAO.createAuth(user.username());
-
-    }
-
-    public void logoutUser(String authToken) throws UnauthorizedException {
-        AuthData authData = authDAO.getAuthByToken(authToken);
-        if (authData == null) {
-            throw new UnauthorizedException("unauthorized");
-        }
-        else {
-            authDAO.deleteAuth(authToken);
+            return userDAO.getUser(user.username());
         }
     }
 
     /**
-     * Clears both users and authentications
+     * Validates a user login
+     * @param user The user to try logging in
+     * @throws UnauthorizedException Thrown when the passwords don't match
      */
-    public void clear() {
-        userDAO.clear();
-        authDAO.clear();
-    }
-
-    private void validateUser(UserData user) throws UnauthorizedException {
+    public void validateUser(UserData user) throws UnauthorizedException {
         // Create hashed user
         String hashedPassword = MemoryUserDAO.hashPassword(user.password());
         UserData hashedUser = new UserData(user.username(), hashedPassword, user.email());
@@ -79,6 +54,13 @@ public class UserService {
         if (validateUser == null || !validateUser.password().equals(hashedUser.password())) {
             throw new UnauthorizedException("unauthorized");
         }
+    }
+
+    /**
+     * Clears both users and authentications
+     */
+    public void clear() {
+        userDAO.clear();
     }
 
 }

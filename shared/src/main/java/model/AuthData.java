@@ -7,8 +7,8 @@ import java.util.UUID;
 
 public record AuthData(String authToken, String username) {
 
-    private static final SecureRandom SecureRandom = new SecureRandom();
-    private static final Base64.Encoder Base64Encoder = Base64.getUrlEncoder().withoutPadding();
+    private static final SecureRandom secureRandom = new SecureRandom();
+    private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder().withoutPadding();
 
     /**
      * Randomly generates a secure auth token.

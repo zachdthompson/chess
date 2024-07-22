@@ -1,14 +1,8 @@
 package model;
-
-import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.Objects;
 import java.util.UUID;
 
 public record AuthData(String authToken, String username) {
-
-    private static final SecureRandom secureRandom = new SecureRandom();
-    private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder().withoutPadding();
 
     /**
      * Randomly generates a secure auth token.

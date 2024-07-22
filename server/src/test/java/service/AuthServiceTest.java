@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AuthServiceTest {
 
-    private static final Logger Log = LoggerFactory.getLogger(AuthServiceTest.class);
     private AuthService authService;
     private MemoryAuthDAO memoryAuthDAO;
     private MemoryUserDAO memoryUserDAO;

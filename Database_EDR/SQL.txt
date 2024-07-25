@@ -21,7 +21,7 @@ CREATE TABLE User
 CREATE TABLE Authentication
 (
   authToken VARCHAR(256) NOT NULL,
-  username INT NOT NULL,
+  username VARCHAR(50) NOT NULL,
   PRIMARY KEY (authToken),
   FOREIGN KEY (username) REFERENCES User(username)
 );

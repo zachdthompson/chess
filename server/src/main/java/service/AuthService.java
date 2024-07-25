@@ -1,15 +1,18 @@
 package service;
 
+import dataaccess.BadRequestException;
+import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedException;
+import dataaccess.dao.IntAuthDAO;
 import dataaccess.dao.MemoryAuthDAO;
 import model.AuthData;
 import model.UserData;
 
 public class AuthService {
 
-    private final MemoryAuthDAO authDAO;
+    private final IntAuthDAO authDAO;
 
-    public AuthService(MemoryAuthDAO authDAO) {
+    public AuthService(IntAuthDAO authDAO) {
         this.authDAO = authDAO;
     }
 
@@ -19,7 +22,7 @@ public class AuthService {
      * @return The AuthData object of the given user
      * @throws UnauthorizedException Thrown when the passwords do not match
      */
-    public AuthData loginUser(UserData user) throws UnauthorizedException {
+    public AuthData loginUser(UserData user) throws UnauthorizedException, DataAccessException {
         return authDAO.createAuth(user.username());
     }
 
@@ -63,7 +66,7 @@ public class AuthService {
     /**
      * Clears all auth data
      */
-    public void clear() {
+    public void clear() throws BadRequestException {
         authDAO.clear();
     }
 }

@@ -14,14 +14,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class AuthServiceTest {
 
     private AuthService authService;
-    private MemoryAuthDAO memoryAuthDAO;
+    private IntAuthDAO authDAO;
     private MemoryUserDAO memoryUserDAO;
 
     @BeforeEach
     public void setup() throws DataAccessException {
-        memoryAuthDAO = new MemoryAuthDAO();
+        authDAO = new IntAuthDAO();
         memoryUserDAO = new MemoryUserDAO();
-        authService = new AuthService(memoryAuthDAO);
+        authService = new AuthService(authDAO);
     }
 
     @Test
@@ -34,7 +34,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void logoutUser() throws UnauthorizedException {
+    void logoutUser() throws UnauthorizedException, DataAccessException {
         UserData checkUser = new UserData("user1", "password", null);
         memoryUserDAO.createUser(checkUser);
         AuthData authData = authService.loginUser(checkUser);
@@ -43,7 +43,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void getUserByAuthToken() throws UnauthorizedException {
+    void getUserByAuthToken() throws UnauthorizedException, DataAccessException {
         UserData checkUser = new UserData("user1", "password", null);
         memoryUserDAO.createUser(checkUser);
 
@@ -57,7 +57,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void validateAuthToken() throws UnauthorizedException {
+    void validateAuthToken() throws UnauthorizedException, DataAccessException {
         UserData checkUser = new UserData("user1", "password", null);
         memoryUserDAO.createUser(checkUser);
 
@@ -69,7 +69,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void clear() throws UnauthorizedException {
+    void clear() throws UnauthorizedException, DataAccessException, BadRequestException {
         UserData checkUser = new UserData("user1", "password", null);
         memoryUserDAO.createUser(checkUser);
         AuthData authData = authService.loginUser(checkUser);

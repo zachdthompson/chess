@@ -1,13 +1,11 @@
 package service;
 
 import dataaccess.BadRequestException;
+import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedException;
 import dataaccess.UserExistsException;
-import dataaccess.dao.MemoryAuthDAO;
-import dataaccess.dao.MemoryGameDAO;
-import dataaccess.dao.MemoryUserDAO;
+import dataaccess.dao.*;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,23 +13,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
 
-    private MemoryUserDAO memoryUserDAO;
-    private MemoryGameDAO memoryGameDAO;
-    private MemoryAuthDAO memoryAuthDAO;
+    private IntUserDAO userDAO;
+    private IntGameDAO gameDAO;
+    private IntAuthDAO authDAO;
     private UserService userService;
 
     @BeforeEach
-    void setUp() {
-        memoryUserDAO = new MemoryUserDAO();
-        memoryGameDAO = new MemoryGameDAO();
-        memoryAuthDAO = new MemoryAuthDAO();
+    void setUp() throws BadRequestException {
+        userDAO = new IntUserDAO();
+        gameDAO = new IntGameDAO();
+        authDAO = new IntAuthDAO();
 
-        userService = new UserService(memoryUserDAO);
+        userService = new UserService(userDAO);
+
+        userDAO.clear();
 
     }
 
     @Test
-    void createValidUser() throws UserExistsException, BadRequestException, UnauthorizedException {
+    void createValidUser() throws UserExistsException, BadRequestException, UnauthorizedException, DataAccessException {
         UserData userData = new UserData("bob", "password", "email@email.com");
         userService.createUser(userData);
 
@@ -46,7 +46,7 @@ class UserServiceTest {
     }
 
     @Test
-    void createDuplicateUser() throws UserExistsException, BadRequestException, UnauthorizedException {
+    void createDuplicateUser() throws UserExistsException, BadRequestException, UnauthorizedException, DataAccessException {
         UserData userData = new UserData("bob", "password", "email@email.com");
         // Create it
         userService.createUser(userData);
@@ -55,7 +55,7 @@ class UserServiceTest {
     }
 
     @Test
-    void clear() throws UserExistsException, BadRequestException, UnauthorizedException {
+    void clear() throws UserExistsException, BadRequestException, UnauthorizedException, DataAccessException {
         UserData userData = new UserData("bob", "password", "email@email.com");
         userService.createUser(userData);
         userService.clear();

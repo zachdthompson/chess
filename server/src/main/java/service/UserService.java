@@ -1,14 +1,16 @@
 package service;
 
 import dataaccess.*;
+import dataaccess.dao.IntUserDAO;
 import dataaccess.dao.MemoryUserDAO;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UserService {
 
-    private final MemoryUserDAO userDAO;
+    private final IntUserDAO userDAO;
 
-    public UserService(MemoryUserDAO userDAO) {
+    public UserService(IntUserDAO userDAO) {
         this.userDAO = userDAO;
     }
 
@@ -19,7 +21,7 @@ public class UserService {
      * @throws UserExistsException Thrown if the username exists already
      * @throws BadRequestException Thrown if password is empty
      */
-    public UserData createUser(UserData user) throws UserExistsException, BadRequestException {
+    public UserData createUser(UserData user) throws UserExistsException, BadRequestException, DataAccessException {
 
         UserData checkUsername = userDAO.getUser(user.username());
 
@@ -43,15 +45,12 @@ public class UserService {
      * @param user The user to try logging in
      * @throws UnauthorizedException Thrown when the passwords don't match
      */
-    public void validateUser(UserData user) throws UnauthorizedException {
-        // Create hashed user
-        String hashedPassword = MemoryUserDAO.hashPassword(user.password());
-        UserData hashedUser = new UserData(user.username(), hashedPassword, user.email());
+    public void validateUser(UserData user) throws UnauthorizedException, DataAccessException {
 
-        UserData validateUser = userDAO.getUser(hashedUser.username());
+        UserData validateUser = userDAO.getUser(user.username());
 
         // If the user does not exist or the passwords dont match
-        if (validateUser == null || !validateUser.password().equals(hashedUser.password())) {
+        if (validateUser == null || !BCrypt.checkpw(user.password(), validateUser.password())) {
             throw new UnauthorizedException("unauthorized");
         }
     }
@@ -59,7 +58,7 @@ public class UserService {
     /**
      * Clears both users and authentications
      */
-    public void clear() {
+    public void clear() throws BadRequestException, DataAccessException {
         userDAO.clear();
     }
 

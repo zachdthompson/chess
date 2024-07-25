@@ -4,6 +4,8 @@ import dataaccess.DataAccessException;
 import dataaccess.UserExistsException;
 
 import dataaccess.BadRequestException;
+import dataaccess.dao.IntAuthDAO;
+import dataaccess.dao.IntGameDAO;
 import dataaccess.dao.MemoryGameDAO;
 import model.GameData;
 

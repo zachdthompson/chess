@@ -31,7 +31,7 @@ public class AuthService {
      * @param authToken The token of the user to log out
      * @throws UnauthorizedException Thrown when the token does not exist
      */
-    public void logoutUser(String authToken) throws UnauthorizedException {
+    public void logoutUser(String authToken) throws UnauthorizedException, DataAccessException {
         AuthData authData = authDAO.getAuthByToken(authToken);
         if (authData == null) {
             throw new UnauthorizedException("unauthorized");
@@ -47,7 +47,7 @@ public class AuthService {
      * @return The AuthData object of that user
      * @throws UnauthorizedException Thrown when the token does not exist
      */
-    public AuthData getUserByAuthToken(String authToken) throws UnauthorizedException {
+    public AuthData getUserByAuthToken(String authToken) throws UnauthorizedException, DataAccessException {
         return authDAO.getAuthByToken(authToken);
     }
 
@@ -56,7 +56,7 @@ public class AuthService {
      * @param authToken The auth token to check
      * @throws UnauthorizedException Thrown when that token does not exist
      */
-    public void validateAuthToken(String authToken) throws UnauthorizedException {
+    public void validateAuthToken(String authToken) throws UnauthorizedException, DataAccessException {
         AuthData authData = authDAO.getAuthByToken(authToken);
         if (authData == null || !authData.authToken().equals(authToken)) {
             throw new UnauthorizedException("unauthorized");

@@ -13,9 +13,8 @@ public class IntUserDAO extends SQLParent {
                     CREATE TABLE IF NOT EXISTS User
                     (
                       username VARCHAR(50) NOT NULL,
-                        password VARCHAR(64) NOT NULL,
-                        email VARCHAR(256) NOT NULL,
-                        gameID BIGINT,
+                        password VARCHAR(64) DEFAULT NULL,
+                        email VARCHAR(256) DEFAULT NULL,
                         PRIMARY KEY (username)
                     );
             """

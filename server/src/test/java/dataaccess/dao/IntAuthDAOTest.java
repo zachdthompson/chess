@@ -31,16 +31,21 @@ class IntAuthDAOTest {
     }
 
     @Test
-    void getAuthByToken() {
-
+    void getAuthByToken() throws DataAccessException {
+        AuthData newAuth = intAuthDAO.createAuth("testUser");
+        assertDoesNotThrow(() -> {intAuthDAO.getAuthByToken(newAuth.authToken());});
     }
 
     @Test
-    void getAuthByBadToken() {
+    void getAuthByBadToken() throws DataAccessException {
+        assertNull(intAuthDAO.getAuthByToken("badToken"));
     }
 
     @Test
-    void deleteValidAuth() {
+    void deleteValidAuth() throws DataAccessException {
+        AuthData newAuth = intAuthDAO.createAuth("testUser");
+        assertDoesNotThrow(() -> {intAuthDAO.deleteAuth(newAuth.authToken());});
+        assertNull(intAuthDAO.getAuthByToken(newAuth.authToken()));
     }
 
     @Test

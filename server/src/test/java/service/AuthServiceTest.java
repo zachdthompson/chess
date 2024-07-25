@@ -6,8 +6,6 @@ import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,19 +13,22 @@ class AuthServiceTest {
 
     private AuthService authService;
     private IntAuthDAO authDAO;
-    private MemoryUserDAO memoryUserDAO;
+    private IntUserDAO userDAO;
 
     @BeforeEach
-    public void setup() throws DataAccessException {
+    public void setup() throws DataAccessException, BadRequestException {
         authDAO = new IntAuthDAO();
-        memoryUserDAO = new MemoryUserDAO();
+        userDAO = new IntUserDAO();
         authService = new AuthService(authDAO);
+
+        authDAO.clear();
+        userDAO.clear();
     }
 
     @Test
     void loginUser() throws DataAccessException, UnauthorizedException {
         UserData checkUser = new UserData("user1", "password", null);
-        memoryUserDAO.createUser(checkUser);
+        userDAO.createUser(checkUser);
         AuthData authData = authService.loginUser(checkUser);
         assertNotNull(authData);
 
@@ -36,7 +37,7 @@ class AuthServiceTest {
     @Test
     void logoutUser() throws UnauthorizedException, DataAccessException {
         UserData checkUser = new UserData("user1", "password", null);
-        memoryUserDAO.createUser(checkUser);
+        userDAO.createUser(checkUser);
         AuthData authData = authService.loginUser(checkUser);
         String authToken = authData.authToken();
         authService.logoutUser(authToken);
@@ -45,7 +46,7 @@ class AuthServiceTest {
     @Test
     void getUserByAuthToken() throws UnauthorizedException, DataAccessException {
         UserData checkUser = new UserData("user1", "password", null);
-        memoryUserDAO.createUser(checkUser);
+        userDAO.createUser(checkUser);
 
         AuthData authData = authService.loginUser(checkUser);
 
@@ -59,7 +60,7 @@ class AuthServiceTest {
     @Test
     void validateAuthToken() throws UnauthorizedException, DataAccessException {
         UserData checkUser = new UserData("user1", "password", null);
-        memoryUserDAO.createUser(checkUser);
+        userDAO.createUser(checkUser);
 
         AuthData authData = authService.loginUser(checkUser);
         String authToken = authData.authToken();
@@ -71,7 +72,7 @@ class AuthServiceTest {
     @Test
     void clear() throws UnauthorizedException, DataAccessException, BadRequestException {
         UserData checkUser = new UserData("user1", "password", null);
-        memoryUserDAO.createUser(checkUser);
+        userDAO.createUser(checkUser);
         AuthData authData = authService.loginUser(checkUser);
         String authToken = authData.authToken();
 

@@ -2,8 +2,12 @@ package dataaccess.dao;
 
 import dataaccess.BadRequestException;
 import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import dataaccess.SQLParent;
 import model.AuthData;
+import model.UserData;
+
+import java.sql.*;
 
 public class IntAuthDAO extends SQLParent {
 
@@ -13,8 +17,7 @@ public class IntAuthDAO extends SQLParent {
                     (
                       authToken VARCHAR(256) NOT NULL,
                       username VARCHAR(50) NOT NULL,
-                      PRIMARY KEY (authToken),
-                      FOREIGN KEY (username) REFERENCES User(username)
+                      PRIMARY KEY (authToken)
                     );
             """
     };
@@ -35,14 +38,41 @@ public class IntAuthDAO extends SQLParent {
         return newAuth;
     }
 
-    public AuthData getAuthByToken(String token) {
-        // SQL HERE
+    public AuthData getAuthByToken(String token) throws DataAccessException {
+        String sql = "SELECT * FROM " + tableName + " WHERE authToken = ?";
+
+        try (Connection conn = DatabaseManager.getConnection()){
+            try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, token);
+
+                // Pull data from the results
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String username = rs.getString("username");
+                        return new AuthData(token, username);
+                    }
+                }
+            }
+        }
+        catch (SQLException | DataAccessException e) {
+            throw new DataAccessException(String.format("Unable to modify database: %s", e.getMessage()));
+        }
         return null;
     }
 
 
-    public void deleteAuth(String authToken) {
-        // SQL HERE
+    public void deleteAuth(String authToken) throws DataAccessException {
+        String sql = "DELETE FROM " + tableName + " WHERE authToken = ?";
+
+        try (Connection conn = DatabaseManager.getConnection()){
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, authToken);
+                ps.executeUpdate();
+            }
+        }
+        catch (SQLException | DataAccessException e) {
+            throw new DataAccessException(String.format("Unable to modify database: %s", e.getMessage()));
+        }
     }
 
     public void clear() throws BadRequestException {

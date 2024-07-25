@@ -68,7 +68,8 @@ public class GameService {
                             gameToJoin.game()
                     )
             );
-        } else if (joinedColor.equals("BLACK") && (gameToJoin.blackUsername() == null || gameToJoin.blackUsername().isEmpty())) {
+        }
+        else if (joinedColor.equals("BLACK") && (gameToJoin.blackUsername() == null || gameToJoin.blackUsername().isEmpty())) {
             gameDAO.updateGame(
                     new GameData(
                             gameID,

@@ -1,0 +1,30 @@
+CREATE TABLE Game
+(
+  gameID INT NOT NULL,
+  whiteUsername VARCHAR(256) NOT NULL,
+  blackUsername VARCHAR(256) NOT NULL,
+  gameName VARCHAR(256) NOT NULL,
+  chessGame JSON NOT NULL,
+  PRIMARY KEY (gameID)
+);
+
+CREATE TABLE User
+(
+  username INT NOT NULL,
+  password VARCHAR(256) NOT NULL,
+  email VARCHAR(256) NOT NULL,
+  gameID INT,
+  PRIMARY KEY (username),
+  FOREIGN KEY (gameID) REFERENCES Game(gameID)
+);
+
+CREATE TABLE Authentication
+(
+  authToken VARCHAR(256) NOT NULL,
+  authID INT NOT NULL,
+  username INT NOT NULL,
+  PRIMARY KEY (authID),
+  FOREIGN KEY (username) REFERENCES User(username),
+  UNIQUE (authToken)
+);
+

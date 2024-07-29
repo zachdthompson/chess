@@ -106,7 +106,6 @@ public class IntGameDAO extends SQLParent {
                 // Pull data from the results
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        Integer gameIDInt = rs.getInt("gameID");
                         String whiteUsername = rs.getString("whiteUsername");
                         String blackUsername = rs.getString("blackUsername");
                         String gameName = rs.getString("gameName");
@@ -130,8 +129,29 @@ public class IntGameDAO extends SQLParent {
      * Returns all currently stored games.
      * @return Collection of all GameData objects
      */
-    public Collection<GameData> readAllGames() {
-        return new ArrayList<>();
+    public Collection<GameData> readAllGames() throws DataAccessException {
+        String sql = "SELECT gameID FROM " + tableName;
+        ArrayList<GameData> games = new ArrayList<>();
+
+        try (Connection conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                // Execute the query to get all game IDs
+                try (ResultSet rs = ps.executeQuery()) {
+                    // Execute for every line
+                    while (rs.next()) {
+                        int gameID = rs.getInt("gameID");
+                        GameData gameData = getGame(gameID);
+                        if (gameData != null) {
+                            games.add(gameData);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new DataAccessException(String.format("Unable to read all games: %s", e.getMessage()));
+        }
+
+        return games;
     }
 
     /**

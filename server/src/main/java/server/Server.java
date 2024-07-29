@@ -16,7 +16,7 @@ public class Server {
 
     public Server() {
         IntAuthDAO authDAO = new IntAuthDAO();
-        MemoryGameDAO gameDAO = new MemoryGameDAO();
+        IntGameDAO gameDAO = new IntGameDAO();
         IntUserDAO userDAO = new IntUserDAO();
         this.gameService = new GameService(gameDAO);
         this.userService = new UserService(userDAO);

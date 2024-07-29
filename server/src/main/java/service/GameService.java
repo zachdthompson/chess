@@ -13,9 +13,9 @@ import java.util.Collection;
 
 public class GameService {
 
-    private final MemoryGameDAO gameDAO;
+    private final IntGameDAO gameDAO;
 
-    public GameService(MemoryGameDAO gameDAO) {
+    public GameService(IntGameDAO gameDAO) {
         this.gameDAO = gameDAO;
     }
 
@@ -25,7 +25,7 @@ public class GameService {
      * @return The new GameData object of a game
      * @throws BadRequestException Thrown when the GameName is empty
      */
-    public GameData createGame(GameData gameData) throws BadRequestException {
+    public GameData createGame(GameData gameData) throws BadRequestException, DataAccessException {
 
         if (gameData.gameName() == null || gameData.gameName().isEmpty()) {
             throw new BadRequestException("missing name");
@@ -53,7 +53,7 @@ public class GameService {
      * @throws UserExistsException Thrown if the color is taken
      * @throws BadRequestException Thrown if the game to join doesn't exist
      */
-    public GameData joinGame(int gameID, String joinedColor, String username) throws UserExistsException, BadRequestException {
+    public GameData joinGame(int gameID, String joinedColor, String username) throws UserExistsException, BadRequestException, DataAccessException {
         GameData gameToJoin = gameDAO.getGame(gameID);
 
         if (gameToJoin == null) {
@@ -92,7 +92,7 @@ public class GameService {
     /**
      * Clears all games
      */
-    public void clearGames() {
+    public void clearGames() throws BadRequestException {
         gameDAO.clear();
     }
 }

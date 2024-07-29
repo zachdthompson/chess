@@ -158,8 +158,25 @@ public class IntGameDAO extends SQLParent {
      * Updates the settings of a given game
      * @param game The game to update
      */
-    public void updateGame(GameData game) {
+    public void updateGame(GameData game) throws DataAccessException {
 
+        String sql = "UPDATE " + tableName + " SET whiteUsername = ?, blackUsername = ?, gameName = ?, chessGame = ? WHERE gameID = ?";
+        Gson gson = new Gson();
+
+        try (Connection conn = DatabaseManager.getConnection()){
+            try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, game.whiteUsername());
+                ps.setString(2, game.blackUsername());
+                ps.setString(3, game.gameName());
+                ps.setString(4, gson.toJson(game));
+                ps.setInt(5, game.gameID());
+                ps.executeUpdate();
+            }
+
+        }
+        catch (SQLException | DataAccessException e) {
+            throw new DataAccessException(String.format("Unable to modify database: %s", e.getMessage()));
+        }
     }
 
     /**

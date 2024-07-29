@@ -3,6 +3,7 @@ package service;
 import dataaccess.BadRequestException;
 import dataaccess.DataAccessException;
 import dataaccess.UserExistsException;
+import dataaccess.dao.IntGameDAO;
 import dataaccess.dao.MemoryAuthDAO;
 import dataaccess.dao.MemoryGameDAO;
 import dataaccess.dao.MemoryUserDAO;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GameServiceTest {
 
     private MemoryAuthDAO memoryAuthDAO;
-    private MemoryGameDAO memoryGameDAO;
+    private IntGameDAO memoryGameDAO;
     private MemoryUserDAO memoryUserDAO;
     private AuthData authData;
     private GameService gameService;
@@ -27,7 +28,7 @@ class GameServiceTest {
     @BeforeEach
     void setUp() {
         memoryAuthDAO = new MemoryAuthDAO();
-        memoryGameDAO = new MemoryGameDAO();
+        memoryGameDAO = new IntGameDAO();
         memoryUserDAO = new MemoryUserDAO();
 
         authData = memoryAuthDAO.createAuth("gameTester");
@@ -36,7 +37,7 @@ class GameServiceTest {
     }
 
     @Test
-    void createGame() throws BadRequestException {
+    void createGame() throws BadRequestException, DataAccessException {
         GameData testGame = new GameData(0, null, null, "Test", null);
 
         testGame = gameService.createGame(testGame);
@@ -74,7 +75,7 @@ class GameServiceTest {
     }
 
     @Test
-    void joinGameWhite() throws BadRequestException, UserExistsException {
+    void joinGameWhite() throws BadRequestException, UserExistsException, DataAccessException {
 
         GameData testGame = new GameData(0, null, null, "TestJoin", null);
         testGame = gameService.createGame(testGame);
@@ -85,7 +86,7 @@ class GameServiceTest {
     }
 
     @Test
-    void joinGameBlack() throws BadRequestException, UserExistsException {
+    void joinGameBlack() throws BadRequestException, UserExistsException, DataAccessException {
 
         GameData testGame = new GameData(0, null, null, "TestJoin", null);
         testGame = gameService.createGame(testGame);
@@ -96,7 +97,7 @@ class GameServiceTest {
     }
 
     @Test
-    void invalidJoinGameWhite() throws BadRequestException, UserExistsException {
+    void invalidJoinGameWhite() throws BadRequestException, UserExistsException, DataAccessException {
 
         GameData testGame = new GameData(0, null, null, "TestJoin", null);
         testGame = gameService.createGame(testGame);
@@ -108,7 +109,7 @@ class GameServiceTest {
     }
 
     @Test
-    void clearGames() throws DataAccessException {
+    void clearGames() throws DataAccessException, BadRequestException {
         GameData testGame = new GameData(0, null, null, "Test", null);
 
         gameService.clearGames();

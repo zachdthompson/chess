@@ -75,11 +75,34 @@ class IntGameDAOTest {
 
 
     @Test
-    void updateGame() {
+    void updateGame() throws DataAccessException {
+        GameData gameOne = gameDAO.createGame("Testing");
+
+        GameData gameTwo = new GameData(gameOne.gameID(), "Testing", "hello", "changed", gameOne.game());
+        gameDAO.updateGame(gameTwo);
+
+        assertEquals(gameTwo, gameDAO.getGame(gameOne.gameID()));
 
     }
 
     @Test
-    void clear() {
+    void updateGameNullName() throws DataAccessException {
+        GameData gameOne = gameDAO.createGame("Testing");
+
+        GameData gameTwo = new GameData(gameOne.gameID(), "Testing", "hello", null, gameOne.game());
+
+        assertThrows(DataAccessException.class, () -> gameDAO.updateGame(gameTwo));
+
+    }
+
+    @Test
+    void clear() throws DataAccessException, BadRequestException {
+
+        GameData gameOne = gameDAO.createGame("Clear Testing");
+
+        gameDAO.clear();
+
+        Collection<GameData> games = gameDAO.readAllGames();
+        assertEquals(0, games.size());
     }
 }

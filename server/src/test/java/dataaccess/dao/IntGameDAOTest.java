@@ -29,7 +29,13 @@ class IntGameDAOTest {
     }
 
     @Test
-    void getGame() {
+    void getGame() throws DataAccessException {
+        GameData game = gameDAO.createGame("Testing");
+        int gameID = game.gameID();
+
+        GameData getGame = gameDAO.getGame(gameID);
+
+        assertEquals(game, getGame);
     }
 
     @Test

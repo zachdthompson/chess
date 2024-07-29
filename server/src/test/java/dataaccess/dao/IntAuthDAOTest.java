@@ -27,7 +27,7 @@ class IntAuthDAOTest {
 
     @Test
     void createInvalidAuth() {
-        assertThrows(DataAccessException.class, () -> {intAuthDAO.createAuth("");});
+        assertThrows(DataAccessException.class, () -> {intAuthDAO.createAuth(null);});
     }
 
     @Test
@@ -50,6 +50,7 @@ class IntAuthDAOTest {
 
     @Test
     void deleteInvalidAuth() {
+
     }
 
     @Test

@@ -9,7 +9,7 @@ public class DrawBoard {
     // Board is 10x10 to include the borders
     private String[][] chessBoard = new String[10][10];
 
-    private String borderSquare = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
+    private final String borderSquare = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
 
 
     public DrawBoard() {
@@ -116,9 +116,14 @@ public class DrawBoard {
     }
 
     private String[][] reverseBoard() {
-        String[][] reversedBoard = new String[chessBoard.length][];
-        for (int row = 0; row < chessBoard.length; row++) {
-            reversedBoard[row] = chessBoard[chessBoard.length - 1 - row];
+        int size = chessBoard.length;
+        String[][] reversedBoard = new String[size][size];
+
+        // I found this code on stack overflow for rotating a 2d array 180 degrees
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                reversedBoard[row][col] = chessBoard[size - 1 - row][size - 1 - col];
+            }
         }
         return reversedBoard;
     }

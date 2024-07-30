@@ -23,7 +23,9 @@ public class DrawBoard {
         placePieces(chessGame);
     }
 
-
+    /**
+     * Will print the board in both team orientations
+     */
     public void printBothBoards() {
         String[][] reverseBoard = reverseBoard();
         printBoard(reverseBoard);
@@ -31,6 +33,9 @@ public class DrawBoard {
     }
 
 
+    /**
+     * Prints a given 2D array board
+     */
     private void printBoard(String[][] boardToPrint) {
 
         for (String[] row : boardToPrint) {
@@ -67,6 +72,13 @@ public class DrawBoard {
         }
     }
 
+    /**
+     * Takes a chess game
+     * Finds all the pieces
+     * Maps their location
+     * Puts them in their place on the board
+     * @param game The game we want to draw
+     */
     private void placePieces(ChessGame game) {
 
         ChessBoard board = game.getBoard();
@@ -117,6 +129,13 @@ public class DrawBoard {
 
     }
 
+    /**
+     * Helper to prevent deep nesting
+     * Returns the escape sequence of the team color and piece type
+     * @param teamColor The color of the team
+     * @param pieceType The type of piece
+     * @return EscapeSequence of the color + piece
+     */
     private String getPieceString(ChessGame.TeamColor teamColor, ChessPiece.PieceType pieceType) {
         String pieceString = "";
         switch (pieceType) {

@@ -5,7 +5,6 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
-import java.util.Arrays;
 import java.util.Map;
 
 public class DrawBoard {
@@ -56,17 +55,21 @@ public class DrawBoard {
         // Draw empty board
         for (int row = 0; row < chessBoard.length; row++) {
             for (int col = 0; col < chessBoard[row].length; col++) {
+                // Top and bottom borders
                 if (row == 0 || row == chessBoard.length - 1) {
-                    chessBoard[row][col] = borderSquare + "   ";
+                    chessBoard[row][col] = borderSquare + EscapeSequences.EMPTY;
                 }
+                // Edge borders
                 else if (col == 0 || col == chessBoard[0].length - 1) {
-                    chessBoard[row][col] = borderSquare + "   ";
+                    chessBoard[row][col] = borderSquare + EscapeSequences.EMPTY;
                 }
+                // Checkerboard pattern white
                 else if ((row + col) % 2 == 0) {
-                    chessBoard[row][col] = EscapeSequences.SET_BG_COLOR_WHITE + "   ";
+                    chessBoard[row][col] = EscapeSequences.SET_BG_COLOR_WHITE + EscapeSequences.EMPTY;
                 }
+                // Everything else black
                 else {
-                    chessBoard[row][col] = EscapeSequences.SET_BG_COLOR_BLACK + "   ";
+                    chessBoard[row][col] = EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.EMPTY;
                 }
             }
         }
@@ -97,14 +100,16 @@ public class DrawBoard {
 
         // Place them on the grid
         for (Map.Entry<ChessPosition, ChessPiece> entry : pieceMap.entrySet()) {
+
+            // Extracted data
             ChessPiece piece = entry.getValue();
             ChessPosition currPosition = entry.getKey();
             ChessPiece.PieceType pieceType = piece.getPieceType();
             ChessGame.TeamColor teamColor = piece.getTeamColor();
-
             int row = currPosition.getRow();
             int col = currPosition.getColumn();
 
+            // Get piece string
             String pieceString = getPieceString(teamColor, pieceType);
 
             //Get square color
@@ -123,10 +128,7 @@ public class DrawBoard {
             else {
                 chessBoard[row][col] = backgroundColor + EscapeSequences.SET_TEXT_COLOR_RED + pieceString;
             }
-
-
         }
-
     }
 
     /**
@@ -137,6 +139,7 @@ public class DrawBoard {
      * @return EscapeSequence of the color + piece
      */
     private String getPieceString(ChessGame.TeamColor teamColor, ChessPiece.PieceType pieceType) {
+        // this could be replaced with nested maps... But idk
         String pieceString = "";
         switch (pieceType) {
             case KING:

@@ -130,28 +130,41 @@ public class IntGameDAO extends SQLParent {
      * @return Collection of all GameData objects
      */
     public Collection<GameData> readAllGames() throws DataAccessException {
-        String sql = "SELECT gameID FROM " + tableName;
+        ArrayList<Integer> gameIDs = getAllGameIDs();
         ArrayList<GameData> games = new ArrayList<>();
 
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                // Execute the query to get all game IDs
-                try (ResultSet rs = ps.executeQuery()) {
-                    // Execute for every line
-                    while (rs.next()) {
-                        int gameID = rs.getInt("gameID");
-                        GameData gameData = getGame(gameID);
-                        if (gameData != null) {
-                            games.add(gameData);
-                        }
-                    }
-                }
+        // Loop through each game ID
+        for (int gameID : gameIDs) {
+            GameData gameData = getGame(gameID);
+            if (gameData != null) {
+                games.add(gameData);
             }
-        } catch (SQLException | DataAccessException e) {
-            throw new DataAccessException(String.format("Unable to read all games: %s", e.getMessage()));
         }
 
         return games;
+    }
+
+    /**
+     * Private helper to get all the game IDs in the database currently
+     * @return ArrayList of all gameIDs stored in Games
+     * @throws DataAccessException Thrown if there is a SQL error
+     */
+    private ArrayList<Integer> getAllGameIDs() throws DataAccessException {
+        String sql = "SELECT gameID FROM " + tableName;
+        ArrayList<Integer> gameIDs = new ArrayList<>();
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                gameIDs.add(rs.getInt("gameID"));
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("Unable to read game IDs: %s", e.getMessage()));
+        }
+
+        return gameIDs;
     }
 
     /**
@@ -184,9 +197,5 @@ public class IntGameDAO extends SQLParent {
      */
     public void clear() throws BadRequestException {
         clearTable(tableName);
-    }
-
-    public void drop() throws BadRequestException {
-        dropTable(tableName);
     }
 }

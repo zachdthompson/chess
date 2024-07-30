@@ -78,10 +78,4 @@ public class IntAuthDAO extends SQLParent {
     public void clear() throws BadRequestException {
         clearTable(tableName);
     }
-
-    public void drop() throws BadRequestException {
-        dropTable(tableName);
-    }
-
-
 }

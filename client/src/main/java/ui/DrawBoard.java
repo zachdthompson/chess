@@ -14,13 +14,8 @@ public class DrawBoard {
     private String[][] chessBoard = new String[10][10];
 
     private final String borderSquare = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
-    private final String whiteSquareWhitePiece = EscapeSequences.SET_BG_COLOR_WHITE + EscapeSequences.SET_TEXT_COLOR_RED;
-    private final String blackSquareWhitePiece = EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_RED;
-    private final String whiteSquareBlackPiece = EscapeSequences.SET_BG_COLOR_WHITE + EscapeSequences.SET_TEXT_COLOR_BLUE;
-    private final String blackSquareBlackPiece = EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_BLUE;
 
-    private ChessGame chessGame;
-
+    private final ChessGame chessGame;
 
     public DrawBoard() {
         resetBoard();
@@ -98,58 +93,7 @@ public class DrawBoard {
             int row = currPosition.getRow();
             int col = currPosition.getColumn();
 
-            String pieceString = "";
-            switch (pieceType) {
-                case KING:
-                    if (teamColor == ChessGame.TeamColor.BLACK) {
-                        pieceString = EscapeSequences.BLACK_KING;
-                    }
-                    else {
-                        pieceString = EscapeSequences.WHITE_KING;
-                    }
-                    break;
-                case QUEEN:
-                    if (teamColor == ChessGame.TeamColor.BLACK) {
-                        pieceString = EscapeSequences.BLACK_QUEEN;
-                    }
-                    else {
-                        pieceString = EscapeSequences.WHITE_QUEEN;
-                    }
-                    break;
-                case ROOK:
-                    if (teamColor == ChessGame.TeamColor.BLACK) {
-                        pieceString = EscapeSequences.BLACK_ROOK;
-                    }
-                    else {
-                        pieceString = EscapeSequences.WHITE_ROOK;
-                    }
-                    break;
-                case BISHOP:
-                    if (teamColor == ChessGame.TeamColor.BLACK) {
-                        pieceString = EscapeSequences.BLACK_BISHOP;
-                    }
-                    else {
-                        pieceString = EscapeSequences.WHITE_BISHOP;
-                    }
-                    break;
-                case KNIGHT:
-                    if (teamColor == ChessGame.TeamColor.BLACK) {
-                        pieceString = EscapeSequences.BLACK_KNIGHT;
-                    }
-                    else {
-                        pieceString = EscapeSequences.WHITE_KNIGHT;
-                    }
-                    break;
-                case PAWN:
-                    if (teamColor == ChessGame.TeamColor.BLACK) {
-                        pieceString = EscapeSequences.BLACK_PAWN;
-                    }
-                    else {
-                        pieceString = EscapeSequences.WHITE_PAWN;
-                    }
-                    break;
-            }
-
+            String pieceString = getPieceString(teamColor, pieceType);
 
             //Get square color
             String backgroundColor = "";
@@ -173,6 +117,65 @@ public class DrawBoard {
 
     }
 
+    private String getPieceString(ChessGame.TeamColor teamColor, ChessPiece.PieceType pieceType) {
+        String pieceString = "";
+        switch (pieceType) {
+            case KING:
+                if (teamColor == ChessGame.TeamColor.BLACK) {
+                    pieceString = EscapeSequences.BLACK_KING;
+                }
+                else {
+                    pieceString = EscapeSequences.WHITE_KING;
+                }
+                break;
+            case QUEEN:
+                if (teamColor == ChessGame.TeamColor.BLACK) {
+                    pieceString = EscapeSequences.BLACK_QUEEN;
+                }
+                else {
+                    pieceString = EscapeSequences.WHITE_QUEEN;
+                }
+                break;
+            case ROOK:
+                if (teamColor == ChessGame.TeamColor.BLACK) {
+                    pieceString = EscapeSequences.BLACK_ROOK;
+                }
+                else {
+                    pieceString = EscapeSequences.WHITE_ROOK;
+                }
+                break;
+            case BISHOP:
+                if (teamColor == ChessGame.TeamColor.BLACK) {
+                    pieceString = EscapeSequences.BLACK_BISHOP;
+                }
+                else {
+                    pieceString = EscapeSequences.WHITE_BISHOP;
+                }
+                break;
+            case KNIGHT:
+                if (teamColor == ChessGame.TeamColor.BLACK) {
+                    pieceString = EscapeSequences.BLACK_KNIGHT;
+                }
+                else {
+                    pieceString = EscapeSequences.WHITE_KNIGHT;
+                }
+                break;
+            case PAWN:
+                if (teamColor == ChessGame.TeamColor.BLACK) {
+                    pieceString = EscapeSequences.BLACK_PAWN;
+                }
+                else {
+                    pieceString = EscapeSequences.WHITE_PAWN;
+                }
+                break;
+        }
+        return pieceString;
+    }
+
+    /**
+     * Takes the chessBoard variable and rotates it 180 degrees for the other view
+     * @return a new String[][] 2D array to print
+     */
     private String[][] reverseBoard() {
         int size = chessBoard.length;
         String[][] reversedBoard = new String[size][size];

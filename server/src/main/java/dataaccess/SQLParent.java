@@ -40,17 +40,6 @@ public class SQLParent {
         }
     }
 
-    protected void dropTable(String table) throws BadRequestException {
-        try (java.sql.Connection conn = DatabaseManager.getConnection()) {
-            try (java.sql.PreparedStatement preparedStatement = conn.prepareStatement("DROP TABLE " + table)) {
-                preparedStatement.executeUpdate();
-            }
-        }
-        catch (SQLException | DataAccessException e) {
-            throw new BadRequestException(String.format("Unable to configure database: %s", e.getMessage()));
-        }
-    }
-
 
     public int updateQuery(String statement, Object... params) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection();

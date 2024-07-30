@@ -1,8 +1,12 @@
 package ui;
 
+import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
 
 import java.util.Arrays;
+import java.util.Map;
 
 public class DrawBoard {
 
@@ -10,10 +14,18 @@ public class DrawBoard {
     private String[][] chessBoard = new String[10][10];
 
     private final String borderSquare = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.SET_TEXT_COLOR_BLACK;
+    private final String whiteSquareWhitePiece = EscapeSequences.SET_BG_COLOR_WHITE + EscapeSequences.SET_TEXT_COLOR_RED;
+    private final String blackSquareWhitePiece = EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_RED;
+    private final String whiteSquareBlackPiece = EscapeSequences.SET_BG_COLOR_WHITE + EscapeSequences.SET_TEXT_COLOR_BLUE;
+    private final String blackSquareBlackPiece = EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_BLUE;
+
+    private ChessGame chessGame;
 
 
     public DrawBoard() {
         resetBoard();
+        chessGame = new ChessGame();
+        placePieces(chessGame);
     }
 
 
@@ -36,7 +48,9 @@ public class DrawBoard {
 
     }
 
-
+    /**
+     * This will reset to a blank board with no pieces on it
+     */
     private void resetBoard() {
 
         // Draw empty board
@@ -56,62 +70,106 @@ public class DrawBoard {
                 }
             }
         }
-        placePieces();
     }
 
-    private void placePieces() {
+    private void placePieces(ChessGame game) {
 
+        ChessBoard board = game.getBoard();
+        Map<ChessPosition, ChessPiece> pieceMap = new java.util.HashMap<>(Map.of());
 
-        String whiteSquareWhitePiece = EscapeSequences.SET_BG_COLOR_WHITE + EscapeSequences.SET_TEXT_COLOR_RED;
-        String blackSquareWhitePiece = EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_RED;
-        String whiteSquareBlackPiece = EscapeSequences.SET_BG_COLOR_WHITE + EscapeSequences.SET_TEXT_COLOR_BLUE;
-        String blackSquareBlackPiece = EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_BLUE;
-
-        int whitePawnRow = chessBoard.length - 3;
-        int whiteBackRow = chessBoard.length - 2;
-        for (int col = 1 ; col < chessBoard[whitePawnRow].length - 1; col++) {
-            if (col % 2 == 0) {
-                chessBoard[whitePawnRow][col] = blackSquareWhitePiece + EscapeSequences.WHITE_PAWN;
-            }
-            else {
-                chessBoard[whitePawnRow][col] = whiteSquareWhitePiece + EscapeSequences.WHITE_PAWN;
+        // Get a map of all the pieces and their locations
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                ChessPosition currPosition = new ChessPosition(row + 1, col + 1);
+                ChessPiece currPiece = board.getPiece(currPosition);
+                if (currPiece != null) {
+                    pieceMap.put(currPosition, currPiece);
+                }
             }
         }
 
-        // White Back Pieces
-        chessBoard[whiteBackRow][1] = blackSquareWhitePiece + EscapeSequences.WHITE_ROOK;
-        chessBoard[whiteBackRow][2] = whiteSquareWhitePiece + EscapeSequences.WHITE_KNIGHT;
-        chessBoard[whiteBackRow][3] = blackSquareWhitePiece + EscapeSequences.WHITE_BISHOP;
-        chessBoard[whiteBackRow][4] = whiteSquareWhitePiece + EscapeSequences.WHITE_QUEEN;
-        chessBoard[whiteBackRow][5] = blackSquareWhitePiece + EscapeSequences.WHITE_KING;
-        chessBoard[whiteBackRow][6] = whiteSquareWhitePiece + EscapeSequences.WHITE_BISHOP;
-        chessBoard[whiteBackRow][7] = blackSquareWhitePiece + EscapeSequences.WHITE_KNIGHT;
-        chessBoard[whiteBackRow][8] = whiteSquareWhitePiece + EscapeSequences.WHITE_ROOK;
+        // Place them on the grid
+        for (Map.Entry<ChessPosition, ChessPiece> entry : pieceMap.entrySet()) {
+            ChessPiece piece = entry.getValue();
+            ChessPosition currPosition = entry.getKey();
+            ChessPiece.PieceType pieceType = piece.getPieceType();
+            ChessGame.TeamColor teamColor = piece.getTeamColor();
+
+            int row = currPosition.getRow();
+            int col = currPosition.getColumn();
+
+            String pieceString = "";
+            switch (pieceType) {
+                case KING:
+                    if (teamColor == ChessGame.TeamColor.BLACK) {
+                        pieceString = EscapeSequences.BLACK_KING;
+                    }
+                    else {
+                        pieceString = EscapeSequences.WHITE_KING;
+                    }
+                    break;
+                case QUEEN:
+                    if (teamColor == ChessGame.TeamColor.BLACK) {
+                        pieceString = EscapeSequences.BLACK_QUEEN;
+                    }
+                    else {
+                        pieceString = EscapeSequences.WHITE_QUEEN;
+                    }
+                    break;
+                case ROOK:
+                    if (teamColor == ChessGame.TeamColor.BLACK) {
+                        pieceString = EscapeSequences.BLACK_ROOK;
+                    }
+                    else {
+                        pieceString = EscapeSequences.WHITE_ROOK;
+                    }
+                    break;
+                case BISHOP:
+                    if (teamColor == ChessGame.TeamColor.BLACK) {
+                        pieceString = EscapeSequences.BLACK_BISHOP;
+                    }
+                    else {
+                        pieceString = EscapeSequences.WHITE_BISHOP;
+                    }
+                    break;
+                case KNIGHT:
+                    if (teamColor == ChessGame.TeamColor.BLACK) {
+                        pieceString = EscapeSequences.BLACK_KNIGHT;
+                    }
+                    else {
+                        pieceString = EscapeSequences.WHITE_KNIGHT;
+                    }
+                    break;
+                case PAWN:
+                    if (teamColor == ChessGame.TeamColor.BLACK) {
+                        pieceString = EscapeSequences.BLACK_PAWN;
+                    }
+                    else {
+                        pieceString = EscapeSequences.WHITE_PAWN;
+                    }
+                    break;
+            }
 
 
-
-        //Black Pieces
-
-        int blackPawnRow = chessBoard.length - 8;
-        int blackBackRow = chessBoard.length - 9;
-        for (int col = 1 ; col < chessBoard[blackPawnRow].length - 1; col++) {
-            if (col % 2 == 0) {
-                chessBoard[blackPawnRow][col] = whiteSquareBlackPiece + EscapeSequences.BLACK_PAWN;
+            //Get square color
+            String backgroundColor = "";
+            if ((row + col) % 2 == 0) {
+                backgroundColor = EscapeSequences.SET_BG_COLOR_WHITE;
             }
             else {
-                chessBoard[blackPawnRow][col] = blackSquareBlackPiece + EscapeSequences.BLACK_PAWN;
+                backgroundColor = EscapeSequences.SET_BG_COLOR_BLACK;
             }
-        }
 
-        // White Back Pieces
-        chessBoard[blackBackRow][1] = whiteSquareBlackPiece + EscapeSequences.BLACK_ROOK;
-        chessBoard[blackBackRow][2] = blackSquareBlackPiece + EscapeSequences.BLACK_KNIGHT;
-        chessBoard[blackBackRow][3] = whiteSquareBlackPiece + EscapeSequences.BLACK_BISHOP;
-        chessBoard[blackBackRow][4] = blackSquareBlackPiece + EscapeSequences.BLACK_KING;
-        chessBoard[blackBackRow][5] = whiteSquareBlackPiece + EscapeSequences.BLACK_QUEEN;
-        chessBoard[blackBackRow][6] = blackSquareBlackPiece + EscapeSequences.BLACK_BISHOP;
-        chessBoard[blackBackRow][7] = whiteSquareBlackPiece + EscapeSequences.BLACK_KNIGHT;
-        chessBoard[blackBackRow][8] = blackSquareBlackPiece + EscapeSequences.BLACK_ROOK;
+            // set the piece
+            if (teamColor == ChessGame.TeamColor.BLACK) {
+                chessBoard[row][col] =  backgroundColor + EscapeSequences.SET_TEXT_COLOR_BLUE + pieceString;
+            }
+            else {
+                chessBoard[row][col] = backgroundColor + EscapeSequences.SET_TEXT_COLOR_RED + pieceString;
+            }
+
+
+        }
 
     }
 

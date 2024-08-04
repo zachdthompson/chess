@@ -54,8 +54,8 @@ public class DrawBoard {
     private void resetBoard() {
 
         // Initialize labels for columns and rows
-        String[] colLabels = {"  ", " A ", " B ", " C ", " D ", " E ", " F ", " G ", " H ", "  "};
-        String[] rowLabels = {"  ", " 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 ", "  "};
+        String[] colLabels = {EscapeSequences.EMPTY, " A ", " B ", " C ", " D ", " E ", " F ", " G ", " H ", EscapeSequences.EMPTY};
+        String[] rowLabels = {EscapeSequences.EMPTY, " 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 ", EscapeSequences.EMPTY};
 
         // Draw empty board
         for (int row = 0; row < chessBoard.length; row++) {

@@ -66,6 +66,7 @@ public class Menu {
                     case "list" -> list();
                     case "create" -> createGame(params);
                     case "join" -> join(params);
+                    case "observe" -> observe(params);
                     case "help" -> printHelp();
                     case "quit" -> quit();
                     default -> System.out.println("Invalid command: " + command);
@@ -74,12 +75,6 @@ public class Menu {
         }
 
 
-    }
-
-    private void validateAuth() {
-        if (currentState.equals(userState.LOGGED_OUT)) {
-
-        }
     }
 
     private void printHelp() {
@@ -249,10 +244,23 @@ public class Menu {
             int gameID = Integer.parseInt(params[1]);
             ChessGame.TeamColor team = ChessGame.TeamColor.valueOf(teamColor);
 
+            // Save team color
+            if (team == ChessGame.TeamColor.BLACK) {
+                currentState = userState.BLACK;
+            }
+            else {
+                currentState = userState.WHITE;
+            }
 
+            // Save the current game in memory
             gameData = server.joinGame(gameID, team, authToken);
 
+            // Draw the board
             drawBoard.printBothBoards();
+
+            stringBuilder.append(SET_TEXT_COLOR_GREEN + "Joined game ").append(gameID)
+                    .append(RESET_TEXT_COLOR + " as ").append(team).append("\n");
+            System.out.print(stringBuilder);
         }
         catch (Exception e) {
             System.out.println(failure + e.getMessage());
@@ -260,5 +268,31 @@ public class Menu {
 
     }
 
+    private void observe(String[] params) throws Exception {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(RESET_TEXT_COLOR + RESET_BG_COLOR);
 
+        if (params.length < 2) {
+            System.out.println(SET_TEXT_COLOR_RED +failure + "You dont have the right number of arguments. See Help.");
+            System.out.println(RESET_BG_COLOR + RESET_TEXT_COLOR);
+            return;
+        }
+
+        try {
+            int gameID = Integer.parseInt(params[1]);
+
+            // list all current games
+            gameList = server.listGames(authToken);
+
+            if (gameID <= gameList.length) {
+                gameData = gameList[gameID - 1];
+                drawBoard.printBothBoards();
+                currentState = userState.OBSERVER;
+            }
+
+        }
+        catch (Exception e) {
+            System.out.println(failure + e.getMessage());
+        }
+    }
 }

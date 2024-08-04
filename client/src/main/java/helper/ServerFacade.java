@@ -1,13 +1,19 @@
 package helper;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import model.AuthData;
+import model.GameData;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Map;
 
 public class ServerFacade {
@@ -40,6 +46,42 @@ public class ServerFacade {
 
     public void logout(String authToken) throws Exception {
         sendRequest("DELETE", "/session", null, authToken, AuthData.class);
+    }
+
+    public GameData createGame(String gameName, String authToken) throws Exception {
+        Map<String, String> body = Map.of(
+                "gameName", gameName
+        );
+        return sendRequest("POST", "/game", body, authToken, GameData.class);
+    }
+
+    public GameData joinGame(int gameID, ChessGame.TeamColor color, String authToken) throws Exception {
+        // Using var because of varying input data
+        var body = Map.of(
+                "playerColor", color,
+                "gameID", gameID
+        );
+        return sendRequest("PUT", "/game", body, authToken, GameData.class);
+    }
+
+    public GameData[] listGames(String authToken) throws Exception {
+        // Build the HTTP request
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(serverAddress + "/game"))
+                .header("Authorization", authToken)
+                .GET()
+                .build();
+
+        // Send the request
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // Parse the JSON response
+        JsonElement jsonElement = JsonParser.parseString(response.body());
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+        JsonElement gamesArray = jsonObject.get("games");
+
+        // Deserialize the games array into GameData[]
+        return gson.fromJson(gamesArray, GameData[].class);
     }
 
     public void clear() throws Exception {

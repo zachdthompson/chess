@@ -11,8 +11,8 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
 
-        String server = "localhost";
-        int port = 8080;
+        var server  = args.length > 0 ? args[0] : "localhost";
+        int port = args.length > 0 ? Integer.parseInt(args[1]) : 8080;
         Menu menu = new Menu(server, port);
 
         System.out.println("♕ CS240 Chess Client");

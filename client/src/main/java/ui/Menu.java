@@ -4,14 +4,13 @@ import chess.ChessGame;
 import helper.ServerFacade;
 import model.AuthData;
 import model.GameData;
-import model.UserData;
 
 import static java.lang.System.exit;
 import static ui.EscapeSequences.*;
 
 public class Menu {
 
-    private enum userState {
+    private enum UserState {
         LOGGED_OUT,
         LOGGED_IN,
         WHITE,
@@ -28,7 +27,7 @@ public class Menu {
     // User Data
     private String username;
     private String authToken;
-    private Menu.userState currentState = Menu.userState.LOGGED_OUT;
+    private UserState currentState = UserState.LOGGED_OUT;
 
 
     private String failure = "Couldn't process your command: ";
@@ -38,7 +37,7 @@ public class Menu {
     }
 
     public void printInputPrompt() {
-        if (currentState.equals(userState.LOGGED_OUT)) {
+        if (currentState.equals(UserState.LOGGED_OUT)) {
             System.out.print("[LOGGED_OUT] >> ");
         }
         else {
@@ -83,8 +82,10 @@ public class Menu {
 
         switch (currentState) {
             case LOGGED_OUT:
-                returnString.append(SET_TEXT_COLOR_MAGENTA + "login <USERNAME> <PASSWORD>" + RESET_TEXT_COLOR + " - Login to an existing account." + "\n");
-                returnString.append(SET_TEXT_COLOR_MAGENTA + "register <USERNAME> <PASSWORD> <EMAIL>" + RESET_TEXT_COLOR + " - Register a new account." + "\n");
+                returnString.append(SET_TEXT_COLOR_MAGENTA + "login <USERNAME> <PASSWORD>" + RESET_TEXT_COLOR)
+                        .append( " - Login to an existing account." + "\n");
+                returnString.append(SET_TEXT_COLOR_MAGENTA + "register <USERNAME> <PASSWORD> <EMAIL>" + RESET_TEXT_COLOR)
+                        .append( " - Register a new account." + "\n");
                 break;
             case LOGGED_IN:
                 returnString.append(SET_TEXT_COLOR_MAGENTA).append("logout").append(RESET_TEXT_COLOR)
@@ -121,7 +122,7 @@ public class Menu {
             AuthData loginData = server.login(username, password);
 
             authToken = loginData.authToken();
-            currentState = Menu.userState.LOGGED_IN;
+            currentState = UserState.LOGGED_IN;
 
             stringBuilder.append(SET_TEXT_COLOR_GREEN + "Logged in as ").append(username);
             stringBuilder.append(RESET_TEXT_COLOR).append(".").append("\n");
@@ -163,7 +164,7 @@ public class Menu {
 
     private void logout() throws Exception {
         server.logout(authToken);
-        currentState = Menu.userState.LOGGED_OUT;
+        currentState = UserState.LOGGED_OUT;
         username = null;
         authToken = null;
 
@@ -171,7 +172,7 @@ public class Menu {
     }
 
     private void quit() throws Exception {
-        if (currentState.equals(userState.LOGGED_IN)) {
+        if (currentState.equals(UserState.LOGGED_IN)) {
             logout();
         }
         System.out.println(SET_TEXT_COLOR_BLUE + "Goodbye! :)");
@@ -246,10 +247,10 @@ public class Menu {
 
             // Save team color
             if (team == ChessGame.TeamColor.BLACK) {
-                currentState = userState.BLACK;
+                currentState = UserState.BLACK;
             }
             else {
-                currentState = userState.WHITE;
+                currentState = UserState.WHITE;
             }
 
             // Save the current game in memory
@@ -287,7 +288,7 @@ public class Menu {
             if (gameID <= gameList.length) {
                 gameData = gameList[gameID - 1];
                 drawBoard.printBothBoards();
-                currentState = userState.OBSERVER;
+                currentState = UserState.OBSERVER;
             }
 
         }

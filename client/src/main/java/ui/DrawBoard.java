@@ -29,6 +29,7 @@ public class DrawBoard {
         String[][] reverseBoard = reverseBoard();
         printBoard(reverseBoard);
         printBoard(chessBoard);
+        System.out.println(EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
     }
 
 
@@ -52,16 +53,20 @@ public class DrawBoard {
      */
     private void resetBoard() {
 
+        // Initialize labels for columns and rows
+        String[] colLabels = {"  ", " A ", " B ", " C ", " D ", " E ", " F ", " G ", " H ", "  "};
+        String[] rowLabels = {"  ", " 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 ", "  "};
+
         // Draw empty board
         for (int row = 0; row < chessBoard.length; row++) {
             for (int col = 0; col < chessBoard[row].length; col++) {
                 // Top and bottom borders
                 if (row == 0 || row == chessBoard.length - 1) {
-                    chessBoard[row][col] = borderSquare + EscapeSequences.EMPTY;
+                    chessBoard[row][col] = borderSquare + colLabels[col];
                 }
                 // Edge borders
                 else if (col == 0 || col == chessBoard[0].length - 1) {
-                    chessBoard[row][col] = borderSquare + EscapeSequences.EMPTY;
+                    chessBoard[row][col] = borderSquare + rowLabels[row];
                 }
                 // Checkerboard pattern white
                 else if ((row + col) % 2 == 0) {

@@ -38,7 +38,7 @@ public class DrawBoard {
     private void printBoard(String[][] boardToPrint) {
 
         System.out.println();
-        
+
         for (String[] row : boardToPrint) {
             for (String cell : row) {
                 System.out.print(cell + EscapeSequences.RESET_BG_COLOR);

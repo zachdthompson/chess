@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessGame;
 import helper.ServerFacade;
 import model.AuthData;
 import model.GameData;
@@ -46,30 +47,39 @@ public class Menu {
     }
 
     public void handleInput(String input) throws Exception {
-        input = input.toLowerCase();
         String[] params = input.split(" ");
-        String command = params[0];
+        String command = params[0].toLowerCase();
 
-
-        switch (command) {
-            case "login":
-                login(params);
-                break;
-            case "register":
-                register(params);
-                break;
-            case "logout":
-                logout();
-                break;
-            case "help":
-                printHelp();
-                break;
-            case "quit":
-                quit();
+        switch (currentState) {
+            case LOGGED_OUT:
+            switch (command) {
+                case "login" -> login(params);
+                case "register" -> register(params);
+                case "help" -> printHelp();
+                case "quit" -> quit();
+                default -> System.out.println("Invalid command: " + command);
+            }
+            break;
+            case LOGGED_IN:
+                switch (command) {
+                    case "logout" -> logout();
+                    case "list" -> list();
+                    case "create" -> createGame(params);
+                    case "join" -> join(params);
+                    case "help" -> printHelp();
+                    case "quit" -> quit();
+                    default -> System.out.println("Invalid command: " + command);
+                }
                 break;
         }
 
 
+    }
+
+    private void validateAuth() {
+        if (currentState.equals(userState.LOGGED_OUT)) {
+
+        }
     }
 
     private void printHelp() {
@@ -172,4 +182,83 @@ public class Menu {
         System.out.println(SET_TEXT_COLOR_BLUE + "Goodbye! :)");
         exit(0);
     }
+
+    private void list() throws Exception {
+        gameList = server.listGames(authToken);
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (GameData gameData : gameList) {
+            stringBuilder.append(SET_TEXT_UNDERLINE + "Game Name:" + RESET_TEXT_UNDERLINE + " ").append(gameData.gameName())
+                    .append(" " + SET_TEXT_UNDERLINE + "Game ID:" + RESET_TEXT_UNDERLINE + " ").append(gameData.gameID())
+                    .append(" " + SET_TEXT_UNDERLINE + "White Player:"+ RESET_TEXT_UNDERLINE + " ")
+                        .append(gameData.whiteUsername() != null ? gameData.whiteUsername() : "Empty")
+                    .append(" " + SET_TEXT_UNDERLINE + "Black Player:" + RESET_TEXT_UNDERLINE + " ")
+                        .append(gameData.blackUsername() != null ? gameData.blackUsername() : "Empty")
+                    .append("\n");
+        }
+
+        System.out.print(stringBuilder);
+    }
+
+    private void createGame(String[] params) throws Exception {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(RESET_TEXT_COLOR + RESET_BG_COLOR);
+
+        // Early return if args aren't long enough
+        if (params.length < 2) {
+            System.out.println(SET_TEXT_COLOR_RED +failure + "You dont have the right number of arguments. See Help.");
+            System.out.println(RESET_BG_COLOR + RESET_TEXT_COLOR);
+            return;
+        }
+
+        try{
+            String gameName = params[1];
+
+            gameData = server.createGame(gameName, authToken);
+
+            stringBuilder.append(SET_TEXT_COLOR_GREEN + "Created game ").append(gameName);
+            stringBuilder.append(RESET_TEXT_COLOR).append(" with ID ").append(gameData.gameID()).append("\n");
+        }
+        catch (Exception e) {
+            System.out.println(failure + e.getMessage());
+        }
+
+        System.out.print(stringBuilder);
+    }
+
+    private void join(String[] params) throws Exception {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(RESET_TEXT_COLOR + RESET_BG_COLOR);
+
+        if (params.length < 3) {
+            System.out.println(SET_TEXT_COLOR_RED +failure + "You dont have the right number of arguments. See Help.");
+            System.out.println(RESET_BG_COLOR + RESET_TEXT_COLOR);
+            return;
+        }
+
+        String teamColor = params[2];
+
+        if (!teamColor.equals("WHITE") && !teamColor.equals("BLACK")) {
+            System.out.println(SET_TEXT_COLOR_RED +failure + "Please either select WHITE or BLACK!");
+            System.out.println(RESET_BG_COLOR + RESET_TEXT_COLOR);
+            return;
+        }
+
+        try{
+            int gameID = Integer.parseInt(params[1]);
+            ChessGame.TeamColor team = ChessGame.TeamColor.valueOf(teamColor);
+
+
+            gameData = server.joinGame(gameID, team, authToken);
+
+            drawBoard.printBothBoards();
+        }
+        catch (Exception e) {
+            System.out.println(failure + e.getMessage());
+        }
+
+    }
+
+
 }

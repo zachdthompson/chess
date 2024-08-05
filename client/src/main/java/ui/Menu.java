@@ -59,7 +59,7 @@ public class Menu {
                 default -> System.out.println("Invalid command: " + command);
             }
             break;
-            case LOGGED_IN:
+            case LOGGED_IN, WHITE, BLACK, OBSERVER:
                 switch (command) {
                     case "logout" -> logout();
                     case "list" -> list();
@@ -89,7 +89,7 @@ public class Menu {
                 break;
             case LOGGED_IN:
                 returnString.append(SET_TEXT_COLOR_MAGENTA).append("logout").append(RESET_TEXT_COLOR)
-                        .append(" - Log out of").append(username).append(".").append("\n");
+                        .append(" - Log out of ").append(username).append(".").append("\n");
                 returnString.append(SET_TEXT_COLOR_MAGENTA).append("create <Name>").append(RESET_TEXT_COLOR).append(" - Creates a new game.\n");
                 returnString.append(SET_TEXT_COLOR_MAGENTA).append("list").append(RESET_TEXT_COLOR).append(" - Lists all active games.\n");
                 returnString.append(SET_TEXT_COLOR_MAGENTA).append("join <ID> [WHITE|BLACK]").append(RESET_TEXT_COLOR)
@@ -209,8 +209,14 @@ public class Menu {
         }
 
         try{
-            String gameName = params[1];
+            StringBuilder nameBuilder = new StringBuilder();
 
+            // Concat all params
+            for (int i = 1; i < params.length; i++) {
+                nameBuilder.append(params[i]).append(" ");
+            }
+
+            String gameName = nameBuilder.toString();
             gameData = server.createGame(gameName, authToken);
 
             stringBuilder.append(SET_TEXT_COLOR_GREEN + "Created game ").append(gameName);
@@ -278,22 +284,18 @@ public class Menu {
             System.out.println(RESET_BG_COLOR + RESET_TEXT_COLOR);
             return;
         }
+        int gameID = Integer.parseInt(params[1]);
 
-        try {
-            int gameID = Integer.parseInt(params[1]);
+        // list all current games
+        gameList = server.listGames(authToken);
 
-            // list all current games
-            gameList = server.listGames(authToken);
-
-            if (gameID <= gameList.length) {
-                gameData = gameList[gameID - 1];
+        // Find the game in the list
+        for (GameData game : gameList) {
+            if (game.gameID() == gameID) {
+                gameData = game;
                 drawBoard.printBothBoards();
                 currentState = UserState.OBSERVER;
             }
-
-        }
-        catch (Exception e) {
-            System.out.println(failure + e.getMessage());
         }
     }
 }

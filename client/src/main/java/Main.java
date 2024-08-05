@@ -26,6 +26,12 @@ public class Main {
         while (!input.equalsIgnoreCase("quit")) {
             menu.printInputPrompt();
             input = scanner.nextLine();
+
+            // allow for line breaks
+            if (input.isEmpty()) {
+                continue;
+            }
+
             menu.handleInput(input);
         }
     }

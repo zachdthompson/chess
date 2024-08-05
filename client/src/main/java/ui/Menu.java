@@ -87,7 +87,7 @@ public class Menu {
                 returnString.append(SET_TEXT_COLOR_MAGENTA + "register <USERNAME> <PASSWORD> <EMAIL>" + RESET_TEXT_COLOR)
                         .append( " - Register a new account." + "\n");
                 break;
-            case LOGGED_IN:
+            case LOGGED_IN, WHITE, BLACK, OBSERVER:
                 returnString.append(SET_TEXT_COLOR_MAGENTA).append("logout").append(RESET_TEXT_COLOR)
                         .append(" - Log out of ").append(username).append(".").append("\n");
                 returnString.append(SET_TEXT_COLOR_MAGENTA).append("create <Name>").append(RESET_TEXT_COLOR).append(" - Creates a new game.\n");

@@ -5,6 +5,10 @@ import helper.ServerFacade;
 import model.AuthData;
 import model.GameData;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.lang.System.err;
 import static java.lang.System.exit;
 import static ui.EscapeSequences.*;
 
@@ -22,6 +26,8 @@ public class Menu {
     private final ServerFacade server;
     private GameData gameData;
     private GameData[] gameList;
+    private Map<Integer, Integer> gameIdMap = new HashMap<>();
+    Map<Integer, Integer> reverseMap = new HashMap<>();
     private final DrawBoard drawBoard = new DrawBoard();
 
     // User Data
@@ -119,16 +125,14 @@ public class Menu {
             username = params[1];
             String password = params[2];
 
-            AuthData loginData = server.login(username, password);
-
-            authToken = loginData.authToken();
-            currentState = UserState.LOGGED_IN;
+            loginUser(username, password);
 
             stringBuilder.append(SET_TEXT_COLOR_GREEN + "Logged in as ").append(username);
             stringBuilder.append(RESET_TEXT_COLOR).append(".").append("\n");
         }
         catch (Exception e) {
-            System.out.println(failure + e.getMessage());
+            System.out.println(SET_TEXT_COLOR_RED + failure + "That username/password combination does not exist");
+            System.out.println(RESET_BG_COLOR + RESET_TEXT_COLOR);
         }
 
         System.out.print(stringBuilder);
@@ -152,11 +156,14 @@ public class Menu {
 
             server.register(username, password, email);
 
-            stringBuilder.append(SET_TEXT_COLOR_GREEN + "Registered user ").append(username);
-            stringBuilder.append(RESET_TEXT_COLOR).append(". Please login!").append("\n");
+            loginUser(username, password);
+
+            stringBuilder.append(SET_TEXT_COLOR_GREEN + "Registered user ").append(username).append(".").append("\n");
+            stringBuilder.append(RESET_TEXT_COLOR);
+
         }
         catch (Exception e) {
-            System.out.println(failure + e.getMessage());
+            handleError(e);
         }
 
         System.out.print(stringBuilder);
@@ -180,13 +187,17 @@ public class Menu {
     }
 
     private void list() throws Exception {
-        gameList = server.listGames(authToken);
+
+        updateGameList();
 
         StringBuilder stringBuilder = new StringBuilder();
 
         for (GameData gameData : gameList) {
+
+            int gameId = gameIdMap.get(gameData.gameID());
+
             stringBuilder.append(SET_TEXT_UNDERLINE + "Game Name:" + RESET_TEXT_UNDERLINE + " ").append(gameData.gameName())
-                    .append(" " + SET_TEXT_UNDERLINE + "Game ID:" + RESET_TEXT_UNDERLINE + " ").append(gameData.gameID())
+                    .append(" " + SET_TEXT_UNDERLINE + "Game ID:" + RESET_TEXT_UNDERLINE + " ").append(gameId)
                     .append(" " + SET_TEXT_UNDERLINE + "White Player:"+ RESET_TEXT_UNDERLINE + " ")
                         .append(gameData.whiteUsername() != null ? gameData.whiteUsername() : "Empty")
                     .append(" " + SET_TEXT_UNDERLINE + "Black Player:" + RESET_TEXT_UNDERLINE + " ")
@@ -219,11 +230,14 @@ public class Menu {
             String gameName = nameBuilder.toString();
             gameData = server.createGame(gameName, authToken);
 
+            updateGameList();
+            int gameId = gameIdMap.get(gameData.gameID());
+
             stringBuilder.append(SET_TEXT_COLOR_GREEN + "Created game ").append(gameName);
-            stringBuilder.append(RESET_TEXT_COLOR).append(" with ID ").append(gameData.gameID()).append("\n");
+            stringBuilder.append(RESET_TEXT_COLOR).append(" with ID ").append(gameId).append("\n");
         }
         catch (Exception e) {
-            System.out.println(failure + e.getMessage());
+            handleError(e);
         }
 
         System.out.print(stringBuilder);
@@ -248,8 +262,12 @@ public class Menu {
         }
 
         try{
-            int gameID = Integer.parseInt(params[1]);
+            updateGameList();
+
+            int joinGameID = Integer.parseInt(params[1]);
             ChessGame.TeamColor team = ChessGame.TeamColor.valueOf(teamColor);
+
+            joinGameID = reverseMap.get(joinGameID);
 
             // Save team color
             if (team == ChessGame.TeamColor.BLACK) {
@@ -260,17 +278,20 @@ public class Menu {
             }
 
             // Save the current game in memory
-            gameData = server.joinGame(gameID, team, authToken);
+            gameData = server.joinGame(joinGameID, team, authToken);
 
             // Draw the board
             drawBoard.printBothBoards();
 
-            stringBuilder.append(SET_TEXT_COLOR_GREEN + "Joined game ").append(gameID)
+            updateGameList();
+            int gameId = gameIdMap.get(gameData.gameID());
+
+            stringBuilder.append(SET_TEXT_COLOR_GREEN + "Joined game ").append(gameId)
                     .append(RESET_TEXT_COLOR + " as ").append(team).append("\n");
             System.out.print(stringBuilder);
         }
         catch (Exception e) {
-            System.out.println(failure + e.getMessage());
+            handleError(e);
         }
 
     }
@@ -297,5 +318,40 @@ public class Menu {
                 currentState = UserState.OBSERVER;
             }
         }
+    }
+    private void updateGameList() throws Exception {
+        gameList = server.listGames(authToken);
+
+        // Map them to a new ID
+        for (int i = 0; i < gameList.length; i++) {
+            gameIdMap.put(gameList[i].gameID(), (i + 1));
+            reverseMap.put((i + 1), gameList[i].gameID());
+        }
+    }
+
+    private void loginUser(String username, String password) throws Exception {
+        AuthData loginData = server.login(username, password);
+        authToken = loginData.authToken();
+        currentState = UserState.LOGGED_IN;
+    }
+
+    private void handleError(Exception e) {
+        String message = e.getMessage();
+
+        StringBuilder errorBuilder = new StringBuilder();
+        errorBuilder.append(SET_TEXT_COLOR_RED);
+
+        if (message.contains("already taken")) {
+            errorBuilder.append("ERROR! The selected option is already taken!");
+        }
+        else if (message.contains("unauthorized")) {
+            errorBuilder.append("ERROR! You do not have permission to perform this action!");
+        }
+        else {
+            errorBuilder.append("ERROR! Something went wrong! ").append(e.getMessage());
+        }
+
+        errorBuilder.append(RESET_TEXT_COLOR).append("\n");
+        System.out.println(errorBuilder);
     }
 }

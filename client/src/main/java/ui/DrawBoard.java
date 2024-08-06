@@ -16,9 +16,22 @@ public class DrawBoard {
 
     private final ChessGame chessGame;
 
+    /**
+     * Default builder with no game input
+     */
     public DrawBoard() {
         resetBoard();
         chessGame = new ChessGame();
+        placePieces(chessGame);
+    }
+
+    /**
+     * Builder with ChessGame input
+     * @param chessGame The game to draw
+     */
+    public DrawBoard(ChessGame chessGame) {
+        this.chessGame = chessGame;
+        resetBoard();
         placePieces(chessGame);
     }
 
@@ -29,6 +42,19 @@ public class DrawBoard {
         String[][] reverseBoard = reverseBoard();
         printBoard(reverseBoard);
         printBoard(chessBoard);
+        System.out.println(EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
+    }
+
+    /**
+     * This function will only print the board from the perspective of the given color
+     * @param teamColor The team color to print
+     */
+    public void printTeamBoard(ChessGame.TeamColor teamColor) {
+        String[][] boardToPrint = chessBoard.clone();
+        if (teamColor == ChessGame.TeamColor.BLACK) {
+             boardToPrint = reverseBoard();
+        }
+        printBoard(boardToPrint);
         System.out.println(EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR);
     }
 
